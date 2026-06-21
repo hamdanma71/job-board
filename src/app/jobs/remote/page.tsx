@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function RemoteJobsPage() {
-  let remoteJobs = [];
+  let remoteJobs: any[] = [];
   try {
     remoteJobs = await prisma.job.findMany({
       where: { type: "REMOTE" },

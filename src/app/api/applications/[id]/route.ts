@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || (session.user as any).role !== "EMPLOYER") {
@@ -21,7 +22,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const application = await prisma.application.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { job: true }
     });
 
@@ -40,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // Update the application status
     const updatedApplication = await prisma.application.update({
-      where: { id: params.id },
+      where: { id },
       data: { status }
     });
 

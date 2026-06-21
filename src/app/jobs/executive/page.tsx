@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function ExecutiveJobsPage() {
-  let executiveJobs = [];
+  let executiveJobs: any[] = [];
   try {
     // For demonstration, we just fetch jobs that might be full-time. In a real app we'd have a level/seniority field.
     executiveJobs = await prisma.job.findMany({

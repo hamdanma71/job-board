@@ -8,8 +8,9 @@ const countryData: Record<string, { name: string, flag: string, color: string }>
   "qatar": { name: "قطر", flag: "🇶🇦", color: "#8A1538" },
 };
 
-export default async function CountryHub({ params }: { params: { country: string } }) {
-  const country = countryData[params.country];
+export default async function CountryHub({ params }: { params: Promise<{ country: string }> }) {
+  const { country: countryParam } = await params;
+  const country = countryData[countryParam];
   
   if (!country) {
     return (
@@ -20,7 +21,7 @@ export default async function CountryHub({ params }: { params: { country: string
     );
   }
 
-  let latestJobs = [];
+  let latestJobs: any[] = [];
   try {
     latestJobs = await prisma.job.findMany({
       where: {
