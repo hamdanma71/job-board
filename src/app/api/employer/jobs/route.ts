@@ -30,6 +30,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Subscription Check
+    if (company.subscriptionTier !== "PRO") {
+      return NextResponse.json({ success: false, error: "يجب الترقية لباقة المحترفين (PRO) لتتمكن من نشر الوظائف" }, { status: 403 });
+    }
+
     const job = await prisma.job.create({
       data: {
         title,

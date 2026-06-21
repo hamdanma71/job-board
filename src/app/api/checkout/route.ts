@@ -16,10 +16,16 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = (session.user as any).id;
-    const company = await prisma.companyProfile.findUnique({ where: { userId } });
+    let company = await prisma.companyProfile.findUnique({ where: { userId } });
 
     if (!company) {
-      return NextResponse.json({ error: "Company profile not found" }, { status: 404 });
+      // Create a basic company profile if it doesn't exist so they can checkout
+      company = await prisma.companyProfile.create({
+        data: {
+          userId,
+          companyName: (session.user as any).name || "شركة جديدة",
+        }
+      });
     }
 
     // In a real app, you would pass the specific price ID based on the selected tier.

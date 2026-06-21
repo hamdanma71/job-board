@@ -41,9 +41,15 @@ export default async function EmployerDashboard() {
           <p className="text-muted">{company ? company.companyName : "يرجى نشر أول وظيفة لإنشاء ملف الشركة"}</p>
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
-          <Link href="/dashboard/employer/post-job" className="btn btn-primary">
-            + نشر وظيفة جديدة
-          </Link>
+          {company?.subscriptionTier === "PRO" ? (
+            <Link href="/dashboard/employer/post-job" className="btn btn-primary">
+              + نشر وظيفة جديدة
+            </Link>
+          ) : (
+            <Link href="/pricing" className="btn btn-primary" style={{ background: "linear-gradient(135deg, var(--accent), #e11d48)", border: "none" }}>
+              🔒 الترقية لنشر وظائف
+            </Link>
+          )}
           <Link href="/" className="btn btn-outline">الرئيسية</Link>
         </div>
       </header>
