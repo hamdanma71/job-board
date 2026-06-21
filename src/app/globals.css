@@ -1,54 +1,64 @@
 /* ==========================================================================
-   Design System - Job Marketplace
+   Design System - Premium Job Marketplace
    ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Inter:wght@400;500;700&display=swap');
+
 :root {
-  /* Colors */
-  --primary: #2563eb;       /* Blue */
-  --primary-hover: #1d4ed8;
-  --secondary: #10b981;     /* Emerald Green */
-  --accent: #f59e0b;        /* Amber */
-  --background: #f8fafc;    /* Light Slate */
-  --surface: #ffffff;
-  --surface-hover: #f1f5f9;
+  /* Vibrant Premium Palette */
+  --primary: #4f46e5;       /* Indigo 600 */
+  --primary-hover: #4338ca;
+  --secondary: #0ea5e9;     /* Light Blue 500 */
+  --accent: #f43f5e;        /* Rose 500 */
+  
+  --background: #f1f5f9;    /* Light Slate */
+  --surface: rgba(255, 255, 255, 0.7); /* Glass effect */
+  --surface-solid: #ffffff;
+  --surface-hover: rgba(255, 255, 255, 0.9);
   
   /* Text Colors */
   --text-main: #0f172a;     /* Slate 900 */
-  --text-muted: #64748b;    /* Slate 500 */
+  --text-muted: #475569;    /* Slate 600 */
   --text-light: #94a3b8;    /* Slate 400 */
   
-  /* Borders */
-  --border-light: #e2e8f0;
-  --border-dark: #cbd5e1;
+  /* Borders & Glass */
+  --border-light: rgba(255, 255, 255, 0.3);
+  --border-dark: rgba(0, 0, 0, 0.1);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.4);
   
   /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-arabic: 'Cairo', 'Tajawal', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-arabic: 'Cairo', sans-serif;
   
   /* Radii */
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-md: 12px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    --surface: #1e293b;
-    --surface-hover: #334155;
+    --background: #09090b; /* Zinc 950 */
+    --surface: rgba(24, 24, 27, 0.6); /* Zinc 900 glass */
+    --surface-solid: #18181b;
+    --surface-hover: rgba(39, 39, 42, 0.8);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --border-light: #334155;
-    --border-dark: #475569;
+    --border-light: rgba(255, 255, 255, 0.05);
+    --border-dark: rgba(255, 255, 255, 0.1);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -62,31 +72,40 @@
   margin: 0;
 }
 
-html,
-body {
+html, body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: var(--font-arabic), var(--font-sans);
   background-color: var(--background);
   color: var(--text-main);
   line-height: 1.6;
-  direction: rtl; /* For Arabic default */
+  direction: rtl; /* Arabic default */
+  scroll-behavior: smooth;
+}
+
+/* Dynamic background gradient for the whole body */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.1), transparent 25%),
+              radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.1), transparent 25%);
+  z-index: -1;
+  pointer-events: none;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-ul {
-  list-style: none;
-}
-
+ul { list-style: none; }
 button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
+  background: none; border: none; cursor: pointer; font-family: inherit;
 }
 
 /* ==========================================================================
@@ -105,47 +124,55 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  transition: all var(--transition-fast);
+  padding: 0.8rem 1.8rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  transition: all var(--transition-bounce);
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-glow);
 }
 
 .btn-outline {
   background-color: transparent;
-  border: 1px solid var(--primary);
+  border: 2px solid var(--primary);
   color: var(--primary);
 }
 
 .btn-outline:hover {
   background-color: var(--primary);
   color: white;
+  transform: translateY(-2px);
 }
 
-/* Cards */
+/* Glassmorphism Cards */
 .card {
-  background-color: var(--surface);
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 1.5rem;
-  border: 1px solid var(--border-light);
-  transition: box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-glass);
+  padding: 2rem;
+  border: var(--glass-border);
+  transition: transform var(--transition-bounce), box-shadow var(--transition-normal);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  border-color: rgba(255,255,255,0.8);
 }
 
 /* Forms */
@@ -153,57 +180,49 @@ button {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .input-label {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .input-field {
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.2rem;
   border: 1px solid var(--border-dark);
   border-radius: var(--radius-md);
-  background-color: var(--surface);
+  background-color: var(--surface-solid);
   color: var(--text-main);
   font-family: inherit;
-  transition: border-color var(--transition-fast);
+  transition: all var(--transition-fast);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+  transform: translateY(-1px);
 }
 
 /* Layout Utilities */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+.text-center { text-align: center; }
+
+/* Margins */
+.mt-2 { margin-top: 0.5rem; } .mt-4 { margin-top: 1rem; } .mt-8 { margin-top: 2rem; }
+.mb-2 { margin-bottom: 0.5rem; } .mb-4 { margin-bottom: 1rem; } .mb-8 { margin-bottom: 2rem; }
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
 }
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.mt-2 { margin-top: 0.5rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-8 { margin-top: 2rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-8 { margin-bottom: 2rem; }
