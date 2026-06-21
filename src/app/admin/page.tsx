@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -29,86 +30,111 @@ export default async function AdminDashboard() {
   });
 
   return (
-    <main className="container" style={{ padding: "3rem 1.5rem" }}>
-      <header className="flex-between mb-8">
+    <main className="container animate-fade-in" style={{ padding: "4rem 1.5rem" }}>
+      <header className="flex-between mb-8" style={{ background: "var(--surface)", padding: "2rem", borderRadius: "var(--radius-lg)", border: "var(--glass-border)", boxShadow: "var(--shadow-glass)" }}>
         <div>
-          <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>لوحة تحكم الإدارة (Admin)</h1>
-          <p className="text-muted">نظرة عامة على أداء المنصة وإدارة الشركات</p>
+          <h1 style={{ fontSize: "2rem", fontWeight: "bold", background: "linear-gradient(135deg, var(--primary), var(--secondary))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>لوحة التحكم الذكية (Admin)</h1>
+          <p className="text-muted" style={{ marginTop: "0.5rem" }}>نظرة شاملة على أداء المنصة وإدارة الشركات بصلاحيات مطلقة</p>
         </div>
-        <Link href="/" className="btn btn-outline">الرئيسية</Link>
+        <Link href="/" className="btn btn-outline">العودة للرئيسية</Link>
       </header>
 
       {/* Stats Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
-        <div className="card text-center">
-          <span style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--primary)" }}>{usersCount}</span>
-          <p className="text-muted">إجمالي المستخدمين</p>
+        <div className="card text-center" style={{ borderTop: "4px solid var(--primary)" }}>
+          <span style={{ fontSize: "3rem", fontWeight: "900", color: "var(--primary)" }}>{usersCount}</span>
+          <p style={{ color: "var(--text-muted)", fontWeight: "600", marginTop: "0.5rem" }}>إجمالي المستخدمين</p>
         </div>
-        <div className="card text-center">
-          <span style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--secondary)" }}>{candidatesCount}</span>
-          <p className="text-muted">الباحثين عن عمل</p>
+        <div className="card text-center" style={{ borderTop: "4px solid var(--secondary)" }}>
+          <span style={{ fontSize: "3rem", fontWeight: "900", color: "var(--secondary)" }}>{candidatesCount}</span>
+          <p style={{ color: "var(--text-muted)", fontWeight: "600", marginTop: "0.5rem" }}>الباحثين عن عمل</p>
         </div>
-        <div className="card text-center">
-          <span style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--accent)" }}>{companiesCount}</span>
-          <p className="text-muted">الشركات المسجلة</p>
+        <div className="card text-center" style={{ borderTop: "4px solid var(--accent)" }}>
+          <span style={{ fontSize: "3rem", fontWeight: "900", color: "var(--accent)" }}>{companiesCount}</span>
+          <p style={{ color: "var(--text-muted)", fontWeight: "600", marginTop: "0.5rem" }}>الشركات المسجلة</p>
         </div>
-        <div className="card text-center">
-          <span style={{ fontSize: "2.5rem", fontWeight: "bold", color: "#3b82f6" }}>{jobsCount}</span>
-          <p className="text-muted">الوظائف المنشورة</p>
+        <div className="card text-center" style={{ borderTop: "4px solid #8b5cf6" }}>
+          <span style={{ fontSize: "3rem", fontWeight: "900", color: "#8b5cf6" }}>{jobsCount}</span>
+          <p style={{ color: "var(--text-muted)", fontWeight: "600", marginTop: "0.5rem" }}>الوظائف الفعالة</p>
         </div>
-        <div className="card text-center">
-          <span style={{ fontSize: "2.5rem", fontWeight: "bold", color: "#8b5cf6" }}>{applicationsCount}</span>
-          <p className="text-muted">الطلبات المقدمة</p>
+        <div className="card text-center" style={{ borderTop: "4px solid #14b8a6" }}>
+          <span style={{ fontSize: "3rem", fontWeight: "900", color: "#14b8a6" }}>{applicationsCount}</span>
+          <p style={{ color: "var(--text-muted)", fontWeight: "600", marginTop: "0.5rem" }}>عمليات التقديم</p>
         </div>
       </div>
 
       {/* Companies Management */}
-      <div className="card">
-        <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>إدارة وتوثيق الشركات</h2>
+      <div className="card" style={{ padding: "0" }}>
+        <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-light)" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>إدارة وتوثيق الشركات 🏢</h2>
+        </div>
         
         {companies.length === 0 ? (
-          <p className="text-muted text-center">لا توجد شركات مسجلة بعد.</p>
+          <p className="text-muted text-center" style={{ padding: "3rem" }}>لا توجد شركات مسجلة بعد.</p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", textAlign: "right", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid var(--border-light)" }}>
-                  <th style={{ padding: "1rem" }}>اسم الشركة</th>
-                  <th style={{ padding: "1rem" }}>البريد الإلكتروني</th>
-                  <th style={{ padding: "1rem", textAlign: "center" }}>الباقة الحالية</th>
-                  <th style={{ padding: "1rem", textAlign: "center" }}>حالة التوثيق</th>
-                  <th style={{ padding: "1rem", textAlign: "center" }}>إجراءات</th>
+              <thead style={{ backgroundColor: "var(--surface-hover)" }}>
+                <tr>
+                  <th style={{ padding: "1.5rem 1rem", color: "var(--text-muted)" }}>اسم الشركة</th>
+                  <th style={{ padding: "1.5rem 1rem", color: "var(--text-muted)" }}>البريد الإلكتروني</th>
+                  <th style={{ padding: "1.5rem 1rem", textAlign: "center", color: "var(--text-muted)" }}>الباقة الحالية</th>
+                  <th style={{ padding: "1.5rem 1rem", textAlign: "center", color: "var(--text-muted)" }}>حالة التوثيق</th>
+                  <th style={{ padding: "1.5rem 1rem", textAlign: "center", color: "var(--text-muted)" }}>إجراءات</th>
                 </tr>
               </thead>
               <tbody>
                 {companies.map(company => (
-                  <tr key={company.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
-                    <td style={{ padding: "1rem", fontWeight: "bold" }}>{company.companyName}</td>
-                    <td style={{ padding: "1rem" }}>{company.user?.email}</td>
-                    <td style={{ padding: "1rem", textAlign: "center" }}>
-                      <span style={{ padding: "0.2rem 0.6rem", backgroundColor: company.subscriptionTier === "PRO" ? "var(--primary)20" : "var(--surface-hover)", color: company.subscriptionTier === "PRO" ? "var(--primary)" : "var(--text)", borderRadius: "var(--radius-full)", fontSize: "0.85rem" }}>
+                  <tr key={company.id} style={{ borderBottom: "1px solid var(--border-light)", transition: "background-color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                    <td style={{ padding: "1.5rem 1rem", fontWeight: "bold" }}>{company.companyName}</td>
+                    <td style={{ padding: "1.5rem 1rem", color: "var(--text-muted)" }}>{company.user?.email}</td>
+                    <td style={{ padding: "1.5rem 1rem", textAlign: "center" }}>
+                      <span style={{ 
+                        padding: "0.4rem 0.8rem", 
+                        backgroundColor: company.subscriptionTier === "PRO" ? "rgba(79, 70, 229, 0.1)" : "rgba(100, 116, 139, 0.1)", 
+                        color: company.subscriptionTier === "PRO" ? "var(--primary)" : "var(--text-muted)", 
+                        borderRadius: "var(--radius-full)", 
+                        fontWeight: "bold",
+                        fontSize: "0.85rem" 
+                      }}>
                         {company.subscriptionTier}
                       </span>
                     </td>
-                    <td style={{ padding: "1rem", textAlign: "center" }}>
+                    <td style={{ padding: "1.5rem 1rem", textAlign: "center" }}>
                       {company.isVerified ? (
-                        <span style={{ color: "var(--secondary)", fontWeight: "bold" }}>✔️ موثقة</span>
+                        <span style={{ color: "var(--secondary)", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                          <span style={{ width: "8px", height: "8px", backgroundColor: "var(--secondary)", borderRadius: "50%" }}></span> موثقة
+                        </span>
                       ) : (
-                        <span className="text-muted">غير موثقة</span>
+                        <span style={{ color: "var(--accent)", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                          <span style={{ width: "8px", height: "8px", backgroundColor: "var(--accent)", borderRadius: "50%" }}></span> بانتظار التوثيق
+                        </span>
                       )}
                     </td>
-                    <td style={{ padding: "1rem", textAlign: "center" }}>
-                      <form action={async () => {
-                        "use server";
-                        await prisma.companyProfile.update({
-                          where: { id: company.id },
-                          data: { isVerified: !company.isVerified }
-                        });
-                      }}>
-                        <button type="submit" className="btn btn-outline" style={{ padding: "0.3rem 0.6rem", fontSize: "0.85rem" }}>
-                          {company.isVerified ? "إلغاء التوثيق" : "توثيق الشركة"}
-                        </button>
-                      </form>
+                    <td style={{ padding: "1.5rem 1rem", textAlign: "center" }}>
+                      <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                        <form action={async () => {
+                          "use server";
+                          await prisma.companyProfile.update({
+                            where: { id: company.id },
+                            data: { isVerified: !company.isVerified }
+                          });
+                          revalidatePath('/admin');
+                        }}>
+                          <button type="submit" className="btn btn-outline" style={{ padding: "0.4rem 1rem", fontSize: "0.85rem", borderRadius: "var(--radius-full)" }}>
+                            {company.isVerified ? "إلغاء التوثيق" : "توثيق الشركة"}
+                          </button>
+                        </form>
+                        <form action={async () => {
+                          "use server";
+                          await prisma.companyProfile.delete({ where: { id: company.id } });
+                          revalidatePath('/admin');
+                        }}>
+                          <button type="submit" className="btn" style={{ padding: "0.4rem 1rem", fontSize: "0.85rem", borderRadius: "var(--radius-full)", background: "rgba(244, 63, 94, 0.1)", color: "var(--accent)" }}>
+                            حذف
+                          </button>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -117,7 +143,6 @@ export default async function AdminDashboard() {
           </div>
         )}
       </div>
-
     </main>
   );
 }
