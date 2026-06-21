@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "ae",
+    "name": "الإمارات العربية المتحدة",
+    "flag": "🇦🇪",
+    "jobCount": 50
+  },
+  {
+    "id": "is",
+    "name": "آيسلندا",
+    "flag": "🇮🇸",
+    "jobCount": 309
+  },
+  {
+    "id": "et",
+    "name": "إثيوبيا",
+    "flag": "🇪🇹",
+    "jobCount": 191
+  },
+  {
+    "id": "az",
+    "name": "أذربيجان",
+    "flag": "🇦🇿",
+    "jobCount": 361
+  },
+  {
+    "id": "tf",
+    "name": "أراض فرنسية جنوبية وأنتارتيكية",
+    "flag": "🇹🇫",
+    "jobCount": 78
+  },
+  {
+    "id": "am",
+    "name": "أرمينيا",
+    "flag": "🇦🇲",
+    "jobCount": 76
+  },
+  {
+    "id": "aw",
+    "name": "أروبا",
+    "flag": "🇦🇼",
+    "jobCount": 341
+  },
+  {
+    "id": "er",
+    "name": "إريتريا",
+    "flag": "🇪🇷",
+    "jobCount": 261
+  },
+  {
+    "id": "es",
+    "name": "إسبانيا",
+    "flag": "🇪🇸",
+    "jobCount": 113
+  },
+  {
+    "id": "au",
+    "name": "أستراليا",
+    "flag": "🇦🇺",
+    "jobCount": 20
+  },
+  {
+    "id": "ee",
+    "name": "إستونيا",
+    "flag": "🇪🇪",
+    "jobCount": 388
+  },
+  {
+    "id": "il",
+    "name": "إسرائيل",
+    "flag": "🇮🇱",
+    "jobCount": 11
+  },
+  {
+    "id": "af",
+    "name": "أفغانستان",
+    "flag": "🇦🇫",
+    "jobCount": 96
+  },
+  {
+    "id": "io",
+    "name": "إقليم المحيط الهندي البريطاني",
+    "flag": "🇮🇴",
+    "jobCount": 488
+  },
+  {
+    "id": "ar",
+    "name": "الأرجنتين",
+    "flag": "🇦🇷",
+    "jobCount": 165
+  },
+  {
+    "id": "jo",
+    "name": "الأردن",
+    "flag": "🇯🇴",
+    "jobCount": 76
+  },
+  {
+    "id": "ec",
+    "name": "الإكوادور",
+    "flag": "🇪🇨",
+    "jobCount": 235
+  },
+  {
+    "id": "uy",
+    "name": "الأوروغواي",
+    "flag": "🇺🇾",
+    "jobCount": 93
+  },
+  {
+    "id": "al",
+    "name": "ألبانيا",
+    "flag": "🇦🇱",
+    "jobCount": 446
+  },
+  {
+    "id": "bh",
+    "name": "البحرين",
+    "flag": "🇧🇭",
+    "jobCount": 68
+  },
+  {
+    "id": "br",
+    "name": "البرازيل",
+    "flag": "🇧🇷",
+    "jobCount": 300
+  },
+  {
+    "id": "pt",
+    "name": "البرتغال",
+    "flag": "🇵🇹",
+    "jobCount": 260
+  },
+  {
+    "id": "ba",
+    "name": "البوسنة والهرسك",
+    "flag": "🇧🇦",
+    "jobCount": 282
+  },
+  {
+    "id": "me",
+    "name": "الجبل الأسود",
+    "flag": "🇲🇪",
+    "jobCount": 478
+  },
+  {
+    "id": "dz",
+    "name": "الجزائر",
+    "flag": "🇩🇿",
+    "jobCount": 303
+  },
+  {
+    "id": "bq",
+    "name": "الجزر الكاريبية الهولندية",
+    "flag": "🇧🇶",
+    "jobCount": 331
+  },
+  {
+    "id": "dk",
+    "name": "الدنمارك",
+    "flag": "🇩🇰",
+    "jobCount": 98
+  },
+  {
+    "id": "cv",
+    "name": "الرأس الأخضر",
+    "flag": "🇨🇻",
+    "jobCount": 267
+  },
+  {
+    "id": "sa",
+    "name": "السعودية",
+    "flag": "🇸🇦",
+    "jobCount": 487
+  },
+  {
+    "id": "sv",
+    "name": "السلفادور",
+    "flag": "🇸🇻",
+    "jobCount": 417
+  },
+  {
+    "id": "sn",
+    "name": "السنغال",
+    "flag": "🇸🇳",
+    "jobCount": 4
+  },
+  {
+    "id": "sd",
+    "name": "السودان",
+    "flag": "🇸🇩",
+    "jobCount": 99
+  },
+  {
+    "id": "se",
+    "name": "السويد",
+    "flag": "🇸🇪",
+    "jobCount": 101
+  },
+  {
+    "id": "eh",
+    "name": "الصحراء الغربية",
+    "flag": "🇪🇭",
+    "jobCount": 481
+  },
+  {
+    "id": "so",
+    "name": "الصومال",
+    "flag": "🇸🇴",
+    "jobCount": 432
+  },
+  {
+    "id": "cn",
+    "name": "الصين",
+    "flag": "🇨🇳",
+    "jobCount": 429
+  },
+  {
+    "id": "iq",
+    "name": "العراق",
+    "flag": "🇮🇶",
+    "jobCount": 237
+  },
+  {
+    "id": "ga",
+    "name": "الغابون",
+    "flag": "🇬🇦",
+    "jobCount": 475
+  },
+  {
+    "id": "va",
+    "name": "الفاتيكان",
+    "flag": "🇻🇦",
+    "jobCount": 177
+  },
+  {
+    "id": "ph",
+    "name": "الفلبين",
+    "flag": "🇵🇭",
+    "jobCount": 409
+  },
+  {
+    "id": "aq",
+    "name": "القارة القطبية الجنوبية",
+    "flag": "🇦🇶",
+    "jobCount": 334
+  },
+  {
+    "id": "cm",
+    "name": "الكاميرون",
+    "flag": "🇨🇲",
+    "jobCount": 133
+  },
+  {
+    "id": "kw",
+    "name": "الكويت",
+    "flag": "🇰🇼",
+    "jobCount": 471
+  },
+  {
+    "id": "de",
+    "name": "ألمانيا",
+    "flag": "🇩🇪",
+    "jobCount": 16
+  },
+  {
+    "id": "hu",
+    "name": "المجر",
+    "flag": "🇭🇺",
+    "jobCount": 327
+  },
+  {
+    "id": "ma",
+    "name": "المغرب",
+    "flag": "🇲🇦",
+    "jobCount": 27
+  },
+  {
+    "id": "mx",
+    "name": "المكسيك",
+    "flag": "🇲🇽",
+    "jobCount": 259
+  },
+  {
+    "id": "gb",
+    "name": "المملكة المتحدة",
+    "flag": "🇬🇧",
+    "jobCount": 88
+  },
+  {
+    "id": "no",
+    "name": "النرويج",
+    "flag": "🇳🇴",
+    "jobCount": 226
+  },
+  {
+    "id": "at",
+    "name": "النمسا",
+    "flag": "🇦🇹",
+    "jobCount": 25
+  },
+  {
+    "id": "ne",
+    "name": "النيجر",
+    "flag": "🇳🇪",
+    "jobCount": 116
+  },
+  {
+    "id": "in",
+    "name": "الهند",
+    "flag": "🇮🇳",
+    "jobCount": 337
+  },
+  {
+    "id": "us",
+    "name": "الولايات المتحدة",
+    "flag": "🇺🇸",
+    "jobCount": 2
+  },
+  {
+    "id": "jp",
+    "name": "اليابان",
+    "flag": "🇯🇵",
+    "jobCount": 399
+  },
+  {
+    "id": "ye",
+    "name": "اليمن",
+    "flag": "🇾🇪",
+    "jobCount": 106
+  },
+  {
+    "id": "gr",
+    "name": "اليونان",
+    "flag": "🇬🇷",
+    "jobCount": 51
+  },
+  {
+    "id": "ag",
+    "name": "أنتيغوا وباربودا",
+    "flag": "🇦🇬",
+    "jobCount": 102
+  },
+  {
+    "id": "ad",
+    "name": "أندورا",
+    "flag": "🇦🇩",
+    "jobCount": 366
+  },
+  {
+    "id": "id",
+    "name": "إندونيسيا",
+    "flag": "🇮🇩",
+    "jobCount": 434
+  },
+  {
+    "id": "ao",
+    "name": "أنغولا",
+    "flag": "🇦🇴",
+    "jobCount": 135
+  },
+  {
+    "id": "ai",
+    "name": "أنغويلا",
+    "flag": "🇦🇮",
+    "jobCount": 288
+  },
+  {
+    "id": "uz",
+    "name": "أوزبكستان",
+    "flag": "🇺🇿",
+    "jobCount": 401
+  },
+  {
+    "id": "ug",
+    "name": "أوغندا",
+    "flag": "🇺🇬",
+    "jobCount": 175
+  },
+  {
+    "id": "ua",
+    "name": "أوكرانيا",
+    "flag": "🇺🇦",
+    "jobCount": 98
+  },
+  {
+    "id": "ir",
+    "name": "إيران",
+    "flag": "🇮🇷",
+    "jobCount": 498
+  },
+  {
+    "id": "ie",
+    "name": "أيرلندا",
+    "flag": "🇮🇪",
+    "jobCount": 322
+  },
+  {
+    "id": "it",
+    "name": "إيطاليا",
+    "flag": "🇮🇹",
+    "jobCount": 488
+  },
+  {
+    "id": "pg",
+    "name": "بابوا غينيا الجديدة",
+    "flag": "🇵🇬",
+    "jobCount": 78
+  },
+  {
+    "id": "py",
+    "name": "باراغواي",
+    "flag": "🇵🇾",
+    "jobCount": 140
+  },
+  {
+    "id": "bb",
+    "name": "باربادوس",
+    "flag": "🇧🇧",
+    "jobCount": 146
+  },
+  {
+    "id": "pk",
+    "name": "باكستان",
+    "flag": "🇵🇰",
+    "jobCount": 145
+  },
+  {
+    "id": "pw",
+    "name": "بالاو",
+    "flag": "🇵🇼",
+    "jobCount": 305
+  },
+  {
+    "id": "bs",
+    "name": "باهاماس",
+    "flag": "🇧🇸",
+    "jobCount": 87
+  },
+  {
+    "id": "bm",
+    "name": "برمودا",
+    "flag": "🇧🇲",
+    "jobCount": 136
+  },
+  {
+    "id": "bn",
+    "name": "بروناي",
+    "flag": "🇧🇳",
+    "jobCount": 253
+  },
+  {
+    "id": "be",
+    "name": "بلجيكا",
+    "flag": "🇧🇪",
+    "jobCount": 27
+  },
+  {
+    "id": "bg",
+    "name": "بلغاريا",
+    "flag": "🇧🇬",
+    "jobCount": 138
+  },
+  {
+    "id": "bz",
+    "name": "بليز",
+    "flag": "🇧🇿",
+    "jobCount": 426
+  },
+  {
+    "id": "bd",
+    "name": "بنغلاديش",
+    "flag": "🇧🇩",
+    "jobCount": 459
+  },
+  {
+    "id": "pa",
+    "name": "بنما",
+    "flag": "🇵🇦",
+    "jobCount": 287
+  },
+  {
+    "id": "bj",
+    "name": "بنين",
+    "flag": "🇧🇯",
+    "jobCount": 119
+  },
+  {
+    "id": "bt",
+    "name": "بوتان",
+    "flag": "🇧🇹",
+    "jobCount": 464
+  },
+  {
+    "id": "bw",
+    "name": "بوتسوانا",
+    "flag": "🇧🇼",
+    "jobCount": 76
+  },
+  {
+    "id": "pr",
+    "name": "بورتوريكو",
+    "flag": "🇵🇷",
+    "jobCount": 107
+  },
+  {
+    "id": "bf",
+    "name": "بوركينا فاسو",
+    "flag": "🇧🇫",
+    "jobCount": 196
+  },
+  {
+    "id": "mm",
+    "name": "بورما",
+    "flag": "🇲🇲",
+    "jobCount": 123
+  },
+  {
+    "id": "bi",
+    "name": "بوروندي",
+    "flag": "🇧🇮",
+    "jobCount": 426
+  },
+  {
+    "id": "pl",
+    "name": "بولندا",
+    "flag": "🇵🇱",
+    "jobCount": 117
+  },
+  {
+    "id": "bo",
+    "name": "بوليفيا",
+    "flag": "🇧🇴",
+    "jobCount": 424
+  },
+  {
+    "id": "pf",
+    "name": "بولينزيا الفرنسية",
+    "flag": "🇵🇫",
+    "jobCount": 73
+  },
+  {
+    "id": "pe",
+    "name": "بيرو",
+    "flag": "🇵🇪",
+    "jobCount": 429
+  },
+  {
+    "id": "tz",
+    "name": "تانزانيا",
+    "flag": "🇹🇿",
+    "jobCount": 72
+  },
+  {
+    "id": "th",
+    "name": "تايلاند",
+    "flag": "🇹🇭",
+    "jobCount": 398
+  },
+  {
+    "id": "tw",
+    "name": "تايوان",
+    "flag": "🇹🇼",
+    "jobCount": 56
+  },
+  {
+    "id": "tm",
+    "name": "تركمانستان",
+    "flag": "🇹🇲",
+    "jobCount": 146
+  },
+  {
+    "id": "tr",
+    "name": "تركيا",
+    "flag": "🇹🇷",
+    "jobCount": 220
+  },
+  {
+    "id": "tt",
+    "name": "ترينيداد وتوباغو",
+    "flag": "🇹🇹",
+    "jobCount": 242
+  },
+  {
+    "id": "td",
+    "name": "تشاد",
+    "flag": "🇹🇩",
+    "jobCount": 279
+  },
+  {
+    "id": "cl",
+    "name": "تشيلي",
+    "flag": "🇨🇱",
+    "jobCount": 460
+  },
+  {
+    "id": "tg",
+    "name": "توغو",
+    "flag": "🇹🇬",
+    "jobCount": 369
+  },
+  {
+    "id": "tv",
+    "name": "توفالو",
+    "flag": "🇹🇻",
+    "jobCount": 253
+  },
+  {
+    "id": "tk",
+    "name": "توكيلاو",
+    "flag": "🇹🇰",
+    "jobCount": 94
+  },
+  {
+    "id": "tn",
+    "name": "تونس",
+    "flag": "🇹🇳",
+    "jobCount": 429
+  },
+  {
+    "id": "to",
+    "name": "تونغا",
+    "flag": "🇹🇴",
+    "jobCount": 389
+  },
+  {
+    "id": "tl",
+    "name": "تيمور الشرقية",
+    "flag": "🇹🇱",
+    "jobCount": 103
+  },
+  {
+    "id": "jm",
+    "name": "جامايكا",
+    "flag": "🇯🇲",
+    "jobCount": 420
+  },
+  {
+    "id": "gi",
+    "name": "جبل طارق",
+    "flag": "🇬🇮",
+    "jobCount": 142
+  },
+  {
+    "id": "gl",
+    "name": "جرينلاند",
+    "flag": "🇬🇱",
+    "jobCount": 94
+  },
+  {
+    "id": "vi",
+    "name": "جزر العذراء الأمريكية",
+    "flag": "🇻🇮",
+    "jobCount": 240
+  },
+  {
+    "id": "vg",
+    "name": "جزر العذراء البريطانية",
+    "flag": "🇻🇬",
+    "jobCount": 482
+  },
+  {
+    "id": "km",
+    "name": "جزر القمر",
+    "flag": "🇰🇲",
+    "jobCount": 294
+  },
+  {
+    "id": "mv",
+    "name": "جزر المالديف",
+    "flag": "🇲🇻",
+    "jobCount": 359
+  },
+  {
+    "id": "um",
+    "name": "جزر الولايات المتحدة",
+    "flag": "🇺🇲",
+    "jobCount": 46
+  },
+  {
+    "id": "ax",
+    "name": "جزر أولاند",
+    "flag": "🇦🇽",
+    "jobCount": 456
+  },
+  {
+    "id": "pn",
+    "name": "جزر بيتكيرن",
+    "flag": "🇵🇳",
+    "jobCount": 399
+  },
+  {
+    "id": "tc",
+    "name": "جزر توركس وكايكوس",
+    "flag": "🇹🇨",
+    "jobCount": 433
+  },
+  {
+    "id": "sb",
+    "name": "جزر سليمان",
+    "flag": "🇸🇧",
+    "jobCount": 138
+  },
+  {
+    "id": "fo",
+    "name": "جزر فارو",
+    "flag": "🇫🇴",
+    "jobCount": 4
+  },
+  {
+    "id": "fk",
+    "name": "جزر فوكلاند",
+    "flag": "🇫🇰",
+    "jobCount": 428
+  },
+  {
+    "id": "ky",
+    "name": "جزر كايمان",
+    "flag": "🇰🇾",
+    "jobCount": 79
+  },
+  {
+    "id": "ck",
+    "name": "جزر كوك",
+    "flag": "🇨🇰",
+    "jobCount": 487
+  },
+  {
+    "id": "cc",
+    "name": "جزر كوكوس",
+    "flag": "🇨🇨",
+    "jobCount": 37
+  },
+  {
+    "id": "mh",
+    "name": "جزر مارشال",
+    "flag": "🇲🇭",
+    "jobCount": 292
+  },
+  {
+    "id": "mp",
+    "name": "جزر ماريانا الشمالية",
+    "flag": "🇲🇵",
+    "jobCount": 322
+  },
+  {
+    "id": "bv",
+    "name": "جزيرة بوفيه",
+    "flag": "🇧🇻",
+    "jobCount": 342
+  },
+  {
+    "id": "cx",
+    "name": "جزيرة عيد الميلاد",
+    "flag": "🇨🇽",
+    "jobCount": 332
+  },
+  {
+    "id": "im",
+    "name": "جزيرة مان",
+    "flag": "🇮🇲",
+    "jobCount": 94
+  },
+  {
+    "id": "nf",
+    "name": "جزيرة نورفولك",
+    "flag": "🇳🇫",
+    "jobCount": 35
+  },
+  {
+    "id": "hm",
+    "name": "جزيرة هيرد وجزر ماكدونالد",
+    "flag": "🇭🇲",
+    "jobCount": 299
+  },
+  {
+    "id": "cf",
+    "name": "جمهورية أفريقيا الوسطى",
+    "flag": "🇨🇫",
+    "jobCount": 74
+  },
+  {
+    "id": "cz",
+    "name": "جمهورية التشيك",
+    "flag": "🇨🇿",
+    "jobCount": 154
+  },
+  {
+    "id": "do",
+    "name": "جمهورية الدومينيكان",
+    "flag": "🇩🇴",
+    "jobCount": 423
+  },
+  {
+    "id": "cg",
+    "name": "جمهورية الكونغو",
+    "flag": "🇨🇬",
+    "jobCount": 215
+  },
+  {
+    "id": "cd",
+    "name": "جمهورية الكونغو الديمقراطية",
+    "flag": "🇨🇩",
+    "jobCount": 49
+  },
+  {
+    "id": "za",
+    "name": "جنوب أفريقيا",
+    "flag": "🇿🇦",
+    "jobCount": 292
+  },
+  {
+    "id": "ss",
+    "name": "جنوب السودان",
+    "flag": "🇸🇸",
+    "jobCount": 105
+  },
+  {
+    "id": "ge",
+    "name": "جورجيا",
+    "flag": "🇬🇪",
+    "jobCount": 242
+  },
+  {
+    "id": "gs",
+    "name": "جورجيا الجنوبية وجزر ساندويتش الجنوبية",
+    "flag": "🇬🇸",
+    "jobCount": 81
+  },
+  {
+    "id": "dj",
+    "name": "جيبوتي",
+    "flag": "🇩🇯",
+    "jobCount": 122
+  },
+  {
+    "id": "je",
+    "name": "جيرزي",
+    "flag": "🇯🇪",
+    "jobCount": 70
+  },
+  {
+    "id": "dm",
+    "name": "دومينيكا",
+    "flag": "🇩🇲",
+    "jobCount": 33
+  },
+  {
+    "id": "rw",
+    "name": "رواندا",
+    "flag": "🇷🇼",
+    "jobCount": 270
+  },
+  {
+    "id": "ru",
+    "name": "روسيا",
+    "flag": "🇷🇺",
+    "jobCount": 144
+  },
+  {
+    "id": "by",
+    "name": "روسيا البيضاء",
+    "flag": "🇧🇾",
+    "jobCount": 284
+  },
+  {
+    "id": "ro",
+    "name": "رومانيا",
+    "flag": "🇷🇴",
+    "jobCount": 161
+  },
+  {
+    "id": "zm",
+    "name": "زامبيا",
+    "flag": "🇿🇲",
+    "jobCount": 340
+  },
+  {
+    "id": "zw",
+    "name": "زيمبابوي",
+    "flag": "🇿🇼",
+    "jobCount": 332
+  },
+  {
+    "id": "ci",
+    "name": "ساحل العاج",
+    "flag": "🇨🇮",
+    "jobCount": 359
+  },
+  {
+    "id": "ws",
+    "name": "ساموا",
+    "flag": "🇼🇸",
+    "jobCount": 207
+  },
+  {
+    "id": "as",
+    "name": "ساموا الأمريكية",
+    "flag": "🇦🇸",
+    "jobCount": 474
+  },
+  {
+    "id": "bl",
+    "name": "سان بارتيلمي",
+    "flag": "🇧🇱",
+    "jobCount": 252
+  },
+  {
+    "id": "pm",
+    "name": "سان بيير وميكلون",
+    "flag": "🇵🇲",
+    "jobCount": 451
+  },
+  {
+    "id": "sm",
+    "name": "سان مارينو",
+    "flag": "🇸🇲",
+    "jobCount": 238
+  },
+  {
+    "id": "vc",
+    "name": "سانت فينسنت والغرينادين",
+    "flag": "🇻🇨",
+    "jobCount": 212
+  },
+  {
+    "id": "kn",
+    "name": "سانت كيتس ونيفيس",
+    "flag": "🇰🇳",
+    "jobCount": 411
+  },
+  {
+    "id": "lc",
+    "name": "سانت لوسيا",
+    "flag": "🇱🇨",
+    "jobCount": 458
+  },
+  {
+    "id": "mf",
+    "name": "سانت مارتن (الجزء الفرنسي)",
+    "flag": "🇲🇫",
+    "jobCount": 440
+  },
+  {
+    "id": "sx",
+    "name": "سانت مارتن (الجزء الهولندي)",
+    "flag": "🇸🇽",
+    "jobCount": 116
+  },
+  {
+    "id": "sh",
+    "name": "سانت هيلينا وأسينشين وتريستان دا كونا",
+    "flag": "🇸🇭",
+    "jobCount": 374
+  },
+  {
+    "id": "st",
+    "name": "ساو تومي وبرينسيب",
+    "flag": "🇸🇹",
+    "jobCount": 266
+  },
+  {
+    "id": "lk",
+    "name": "سريلانكا",
+    "flag": "🇱🇰",
+    "jobCount": 433
+  },
+  {
+    "id": "sj",
+    "name": "سفالبارد ويان ماين",
+    "flag": "🇸🇯",
+    "jobCount": 314
+  },
+  {
+    "id": "sk",
+    "name": "سلوفاكيا",
+    "flag": "🇸🇰",
+    "jobCount": 344
+  },
+  {
+    "id": "si",
+    "name": "سلوفينيا",
+    "flag": "🇸🇮",
+    "jobCount": 128
+  },
+  {
+    "id": "sg",
+    "name": "سنغافورة",
+    "flag": "🇸🇬",
+    "jobCount": 247
+  },
+  {
+    "id": "sz",
+    "name": "سوازيلاند",
+    "flag": "🇸🇿",
+    "jobCount": 61
+  },
+  {
+    "id": "sy",
+    "name": "سوريا",
+    "flag": "🇸🇾",
+    "jobCount": 497
+  },
+  {
+    "id": "sr",
+    "name": "سورينام",
+    "flag": "🇸🇷",
+    "jobCount": 74
+  },
+  {
+    "id": "ch",
+    "name": "سويسرا",
+    "flag": "🇨🇭",
+    "jobCount": 88
+  },
+  {
+    "id": "sl",
+    "name": "سيراليون",
+    "flag": "🇸🇱",
+    "jobCount": 336
+  },
+  {
+    "id": "sc",
+    "name": "سيشل",
+    "flag": "🇸🇨",
+    "jobCount": 60
+  },
+  {
+    "id": "rs",
+    "name": "صربيا",
+    "flag": "🇷🇸",
+    "jobCount": 38
+  },
+  {
+    "id": "tj",
+    "name": "طاجيكستان",
+    "flag": "🇹🇯",
+    "jobCount": 213
+  },
+  {
+    "id": "om",
+    "name": "عمان",
+    "flag": "🇴🇲",
+    "jobCount": 378
+  },
+  {
+    "id": "gm",
+    "name": "غامبيا",
+    "flag": "🇬🇲",
+    "jobCount": 367
+  },
+  {
+    "id": "gh",
+    "name": "غانا",
+    "flag": "🇬🇭",
+    "jobCount": 49
+  },
+  {
+    "id": "gd",
+    "name": "غرينادا",
+    "flag": "🇬🇩",
+    "jobCount": 209
+  },
+  {
+    "id": "gt",
+    "name": "غواتيمالا",
+    "flag": "🇬🇹",
+    "jobCount": 216
+  },
+  {
+    "id": "gp",
+    "name": "غوادلوب",
+    "flag": "🇬🇵",
+    "jobCount": 294
+  },
+  {
+    "id": "gu",
+    "name": "غوام",
+    "flag": "🇬🇺",
+    "jobCount": 313
+  },
+  {
+    "id": "gf",
+    "name": "غويانا الفرنسية",
+    "flag": "🇬🇫",
+    "jobCount": 165
+  },
+  {
+    "id": "gy",
+    "name": "غيانا",
+    "flag": "🇬🇾",
+    "jobCount": 127
+  },
+  {
+    "id": "gg",
+    "name": "غيرنزي",
+    "flag": "🇬🇬",
+    "jobCount": 361
+  },
+  {
+    "id": "gn",
+    "name": "غينيا",
+    "flag": "🇬🇳",
+    "jobCount": 163
+  },
+  {
+    "id": "gq",
+    "name": "غينيا الاستوائية",
+    "flag": "🇬🇶",
+    "jobCount": 334
+  },
+  {
+    "id": "gw",
+    "name": "غينيا بيساو",
+    "flag": "🇬🇼",
+    "jobCount": 115
+  },
+  {
+    "id": "vu",
+    "name": "فانواتو",
+    "flag": "🇻🇺",
+    "jobCount": 431
+  },
+  {
+    "id": "fr",
+    "name": "فرنسا",
+    "flag": "🇫🇷",
+    "jobCount": 428
+  },
+  {
+    "id": "ps",
+    "name": "فلسطين",
+    "flag": "🇵🇸",
+    "jobCount": 445
+  },
+  {
+    "id": "ve",
+    "name": "فنزويلا",
+    "flag": "🇻🇪",
+    "jobCount": 209
+  },
+  {
+    "id": "fi",
+    "name": "فنلندا",
+    "flag": "🇫🇮",
+    "jobCount": 311
+  },
+  {
+    "id": "vn",
+    "name": "فيتنام",
+    "flag": "🇻🇳",
+    "jobCount": 78
+  },
+  {
+    "id": "fj",
+    "name": "فيجي",
+    "flag": "🇫🇯",
+    "jobCount": 13
+  },
+  {
+    "id": "cy",
+    "name": "قبرص",
+    "flag": "🇨🇾",
+    "jobCount": 438
+  },
+  {
+    "id": "qa",
+    "name": "قطر",
+    "flag": "🇶🇦",
+    "jobCount": 214
+  },
+  {
+    "id": "kg",
+    "name": "قيرغيزستان",
+    "flag": "🇰🇬",
+    "jobCount": 194
+  },
+  {
+    "id": "kz",
+    "name": "كازاخستان",
+    "flag": "🇰🇿",
+    "jobCount": 485
+  },
+  {
+    "id": "nc",
+    "name": "كاليدونيا الجديدة",
+    "flag": "🇳🇨",
+    "jobCount": 457
+  },
+  {
+    "id": "hr",
+    "name": "كرواتيا",
+    "flag": "🇭🇷",
+    "jobCount": 399
+  },
+  {
+    "id": "kh",
+    "name": "كمبوديا",
+    "flag": "🇰🇭",
+    "jobCount": 198
+  },
+  {
+    "id": "ca",
+    "name": "كندا",
+    "flag": "🇨🇦",
+    "jobCount": 64
+  },
+  {
+    "id": "cu",
+    "name": "كوبا",
+    "flag": "🇨🇺",
+    "jobCount": 315
+  },
+  {
+    "id": "cw",
+    "name": "كوراساو",
+    "flag": "🇨🇼",
+    "jobCount": 385
+  },
+  {
+    "id": "kr",
+    "name": "كوريا الجنوبية",
+    "flag": "🇰🇷",
+    "jobCount": 472
+  },
+  {
+    "id": "kp",
+    "name": "كوريا الشمالية",
+    "flag": "🇰🇵",
+    "jobCount": 331
+  },
+  {
+    "id": "cr",
+    "name": "كوستاريكا",
+    "flag": "🇨🇷",
+    "jobCount": 430
+  },
+  {
+    "id": "xk",
+    "name": "كوسوفو",
+    "flag": "🇽🇰",
+    "jobCount": 216
+  },
+  {
+    "id": "co",
+    "name": "كولومبيا",
+    "flag": "🇨🇴",
+    "jobCount": 56
+  },
+  {
+    "id": "ki",
+    "name": "كيريباتي",
+    "flag": "🇰🇮",
+    "jobCount": 317
+  },
+  {
+    "id": "ke",
+    "name": "كينيا",
+    "flag": "🇰🇪",
+    "jobCount": 143
+  },
+  {
+    "id": "re",
+    "name": "لا ريونيون",
+    "flag": "🇷🇪",
+    "jobCount": 172
+  },
+  {
+    "id": "lv",
+    "name": "لاتفيا",
+    "flag": "🇱🇻",
+    "jobCount": 286
+  },
+  {
+    "id": "la",
+    "name": "لاوس",
+    "flag": "🇱🇦",
+    "jobCount": 155
+  },
+  {
+    "id": "lb",
+    "name": "لبنان",
+    "flag": "🇱🇧",
+    "jobCount": 476
+  },
+  {
+    "id": "lu",
+    "name": "لوكسمبورغ",
+    "flag": "🇱🇺",
+    "jobCount": 46
+  },
+  {
+    "id": "ly",
+    "name": "ليبيا",
+    "flag": "🇱🇾",
+    "jobCount": 284
+  },
+  {
+    "id": "lr",
+    "name": "ليبيريا",
+    "flag": "🇱🇷",
+    "jobCount": 102
+  },
+  {
+    "id": "lt",
+    "name": "ليتوانيا",
+    "flag": "🇱🇹",
+    "jobCount": 130
+  },
+  {
+    "id": "li",
+    "name": "ليختنشتاين",
+    "flag": "🇱🇮",
+    "jobCount": 376
+  },
+  {
+    "id": "ls",
+    "name": "ليسوتو",
+    "flag": "🇱🇸",
+    "jobCount": 383
+  },
+  {
+    "id": "mq",
+    "name": "مارتينيك",
+    "flag": "🇲🇶",
+    "jobCount": 239
+  },
+  {
+    "id": "mo",
+    "name": "ماكاو",
+    "flag": "🇲🇴",
+    "jobCount": 496
+  },
+  {
+    "id": "mw",
+    "name": "مالاوي",
+    "flag": "🇲🇼",
+    "jobCount": 134
+  },
+  {
+    "id": "mt",
+    "name": "مالطا",
+    "flag": "🇲🇹",
+    "jobCount": 18
+  },
+  {
+    "id": "ml",
+    "name": "مالي",
+    "flag": "🇲🇱",
+    "jobCount": 416
+  },
+  {
+    "id": "my",
+    "name": "ماليزيا",
+    "flag": "🇲🇾",
+    "jobCount": 484
+  },
+  {
+    "id": "yt",
+    "name": "مايوت",
+    "flag": "🇾🇹",
+    "jobCount": 246
+  },
+  {
+    "id": "mg",
+    "name": "مدغشقر",
+    "flag": "🇲🇬",
+    "jobCount": 456
+  },
+  {
+    "id": "eg",
+    "name": "مصر",
+    "flag": "🇪🇬",
+    "jobCount": 487
+  },
+  {
+    "id": "mk",
+    "name": "مقدونيا الشمالية",
+    "flag": "🇲🇰",
+    "jobCount": 87
+  },
+  {
+    "id": "mn",
+    "name": "منغوليا",
+    "flag": "🇲🇳",
+    "jobCount": 181
+  },
+  {
+    "id": "mr",
+    "name": "موريتانيا",
+    "flag": "🇲🇷",
+    "jobCount": 42
+  },
+  {
+    "id": "mu",
+    "name": "موريشيوس",
+    "flag": "🇲🇺",
+    "jobCount": 329
+  },
+  {
+    "id": "mz",
+    "name": "موزمبيق",
+    "flag": "🇲🇿",
+    "jobCount": 411
+  },
+  {
+    "id": "md",
+    "name": "مولدوفا",
+    "flag": "🇲🇩",
+    "jobCount": 296
+  },
+  {
+    "id": "mc",
+    "name": "موناكو",
+    "flag": "🇲🇨",
+    "jobCount": 165
+  },
+  {
+    "id": "ms",
+    "name": "مونتسرات",
+    "flag": "🇲🇸",
+    "jobCount": 379
+  },
+  {
+    "id": "na",
+    "name": "ناميبيا",
+    "flag": "🇳🇦",
+    "jobCount": 443
+  },
+  {
+    "id": "nr",
+    "name": "ناورو",
+    "flag": "🇳🇷",
+    "jobCount": 127
+  },
+  {
+    "id": "np",
+    "name": "نيبال",
+    "flag": "🇳🇵",
+    "jobCount": 301
+  },
+  {
+    "id": "ng",
+    "name": "نيجيريا",
+    "flag": "🇳🇬",
+    "jobCount": 222
+  },
+  {
+    "id": "ni",
+    "name": "نيكاراغوا",
+    "flag": "🇳🇮",
+    "jobCount": 101
+  },
+  {
+    "id": "nz",
+    "name": "نيوزيلندا",
+    "flag": "🇳🇿",
+    "jobCount": 82
+  },
+  {
+    "id": "nu",
+    "name": "نييوي",
+    "flag": "🇳🇺",
+    "jobCount": 107
+  },
+  {
+    "id": "ht",
+    "name": "هايتي",
+    "flag": "🇭🇹",
+    "jobCount": 440
+  },
+  {
+    "id": "hn",
+    "name": "هندوراس",
+    "flag": "🇭🇳",
+    "jobCount": 103
+  },
+  {
+    "id": "nl",
+    "name": "هولندا",
+    "flag": "🇳🇱",
+    "jobCount": 322
+  },
+  {
+    "id": "hk",
+    "name": "هونغ كونغ",
+    "flag": "🇭🇰",
+    "jobCount": 301
+  },
+  {
+    "id": "wf",
+    "name": "والس وفوتونا",
+    "flag": "🇼🇫",
+    "jobCount": 109
+  },
+  {
+    "id": "fm",
+    "name": "ولايات ميكرونيسيا المتحدة",
+    "flag": "🇫🇲",
+    "jobCount": 492
+  }
+]

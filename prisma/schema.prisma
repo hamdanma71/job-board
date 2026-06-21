@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// In SQLite, we use String instead of Enum
+// Roles: "CANDIDATE", "EMPLOYER", "ADMIN"
+// ApplicationStatus: "PENDING", "REVIEWED", "INTERVIEW", "ACCEPTED", "REJECTED"
+// JobType: "FULL_TIME", "PART_TIME", "CONTRACT", "REMOTE", "INTERNSHIP"
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("CANDIDATE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  candidateProfile CandidateProfile?
+  companyProfile   CompanyProfile?
+  applications     Application[]
+  reviews          Review[]
+  notifications    Notification[]
+}
+
+model CandidateProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio             String?
+  skills          String?  // SQLite does not support String[]. Stored as comma-separated or JSON string.
+  resumeUrl       String?
+  location        String?
+  experienceYears Int?     @default(0)
+  expectedSalary  String?
+  nationality     String?
+  visaStatus      String?
+  specialization  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CompanyProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  industry    String?
+  logoUrl     String?
+  description String?
+  location    String?
+  website     String?
+  
+  subscriptionTier   String   @default("FREE")
+  subscriptionEndsAt DateTime?
+  isVerified         Boolean  @default(false)
+  commercialRegisterUrl String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  jobs Job[]
+  reviews Review[]
+}
+
+model Job {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  location    String
+  salary      String?
+  type        String   @default("FULL_TIME")
+  isActive    Boolean  @default(true)
+  source      String   @default("INTERNAL") // INTERNAL, BAYT, INDEED, etc.
+  externalUrl String?  // Link to the original job post if external
+  
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  applications Application[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Application {
+  id          String   @id @default(uuid())
+  status      String   @default("PENDING")
+  
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  candidateId String
+  candidate   User     @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  appliedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([jobId, candidateId]) // Prevent applying to the same job twice
+}
+
+// Company Reviews and Salaries System
+model Review {
+  id          String   @id @default(uuid())
+  rating      Int      // 1 to 5
+  comment     String
+  salary      String?  // Optional salary disclosure
+  position    String?  // The role they had
+  isAnonymous Boolean  @default(false)
+  
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  reviewerId  String
+  reviewer    User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+}
+
+// Notifications System
+model Notification {
+  id          String   @id @default(uuid())
+  title       String
+  message     String
+  isRead      Boolean  @default(false)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+}
