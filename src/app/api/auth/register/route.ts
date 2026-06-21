@@ -49,6 +49,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error("Registration error:", error);
-    return NextResponse.json({ error: "حدث خطأ داخلي أثناء التسجيل" }, { status: 500 });
+    return NextResponse.json({ error: `خطأ تقني: ${error?.message || "غير معروف"}` }, { status: 500 });
   }
 }
