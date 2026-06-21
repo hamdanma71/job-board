@@ -8,6 +8,8 @@ const countryData: Record<string, { name: string, flag: string, color: string }>
   "qatar": { name: "قطر", flag: "🇶🇦", color: "#8A1538" },
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function CountryHub({ params }: { params: Promise<{ country: string }> }) {
   const { country: countryParam } = await params;
   const country = countryData[countryParam];
