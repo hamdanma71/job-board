@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prepare": "node scripts/install-git-hooks.js",
+    "security:scan": "node scripts/secret-guard.js",
     "predev": "node scripts/i18n/gen-registry.js",
     "prebuild": "node scripts/i18n/gen-registry.js && node scripts/i18n/audit.js && node scripts/i18n/glossary_check.js",
     "build": "prisma generate && next build",
