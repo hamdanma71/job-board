@@ -44,7 +44,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.role = (user as any).role;
         token.id = user.id;
       }
       return token;
@@ -63,5 +63,19 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/login',
-  }
+  },
+  // Quiet the benign JWT_SESSION_ERROR ("decryption operation failed"): it just
+  // means the request carried a stale/invalid session cookie (e.g. issued under a
+  // previous NEXTAUTH_SECRET). NextAuth already resolves the session to null, so
+  // it is not an actionable server error — all other logs are preserved.
+  logger: {
+    error(code, ...rest) {
+      if (code === "JWT_SESSION_ERROR") return;
+      console.error(`[next-auth][error][${code}]`, ...rest);
+    },
+    warn(code) {
+      console.warn(`[next-auth][warn][${code}]`);
+    },
+    debug() {},
+  },
 };
