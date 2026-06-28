@@ -1,8 +1,8 @@
 # JobMatch — خطة العمل والتوثيق المعتمد
 
-**النسخة:** 2.0 · **آخر تحديث:** 2026-06-28 · **الحالة:** معتمدة (Single Source of Truth)
+**النسخة:** 2.1 · **آخر تحديث:** 2026-06-28 · **الحالة:** معتمدة (Single Source of Truth)
 
-منصّة توظيف رقمية (Marketplace) ثنائية الجانب تربط الباحثين عن عمل بالشركات، مبنية على **Next.js 16 + Prisma**، **متعدّدة اللغات (10 لغات)** مع نظام ترجمة مُعتمد وأدوات ذكاء اصطناعي وتجميع وظائف ونظام ATS كامل.
+منصّة توظيف رقمية (Marketplace) ثنائية الجانب تربط الباحثين عن عمل بالشركات، مبنية على **Next.js 16 + Prisma**، **متعدّدة اللغات (10 لغات) متكيّفة تلقائيًّا**، مع نظام ترجمة مُعتمد، أدوات ذكاء اصطناعي، تجميع وظائف، نظام ATS كامل، وبوّابات جودة/أمان آليّة.
 
 > **هذا الملف هو المرجع المعتمد الوحيد لحالة المشروع.** طُهِّر من كل القيم/النسخ القديمة وغير المعتمدة وُوحِّد التوثيق. الرموز: ✅ منجز ومُتحقَّق · 🟡 جزئي · ⬜ مخطّط (يحتاج خدمة خارجية).
 
@@ -12,9 +12,10 @@
 
 - **الواجهة:** Next.js 16 (App Router) · React 19 · TypeScript · نظام تصميم CSS (`src/app/globals.css`، glassmorphism/gradient، يحترم `prefers-reduced-motion`).
 - **الخلفية:** Next.js API Routes · NextAuth (Credentials + JWT، أدوار CANDIDATE/EMPLOYER/ADMIN).
-- **قاعدة البيانات:** Prisma ORM — **محليًّا SQLite** (`prisma/dev.db`)، **للإنتاج PostgreSQL** (انظر §11 النشر).
+- **قاعدة البيانات:** Prisma ORM — **محليًّا SQLite** (`prisma/dev.db`)، **للإنتاج PostgreSQL** (انظر §13).
 - **المدفوعات:** Stripe (Checkout + Webhook موقّع + idempotency). **العملة المعتمدة عبر المنصّة: الدرهم الإماراتي (AED / د.إ).**
 - **الذكاء الاصطناعي:** OpenAI (`gpt-4o-mini`، JSON mode) مع بدائل تجريبية آمنة عند غياب المفتاح.
+- **استخراج نصّ السيرة (PDF):** `pdf-parse` v2 (يعتمد `pdfjs-dist` + `@napi-rs/canvas`) — مُستثناة من حزم الخادم عبر `serverExternalPackages` في `next.config.ts` (إلزاميّ؛ بدونه تفشل القراءة في بيئة Next/Turbopack).
 
 ---
 
@@ -61,17 +62,9 @@
 ### 3.5 معيار الترجمة «المطابقة» (قاعدة حاكمة)
 كل ترجمة تلتزم بـ12 شرطًا: الدقّة الكاملة · الاكتمال · حفظ المعنى · توحيد المصطلحات · حفظ التنسيق · مطابقة الأسماء/البيانات · مطابقة الأرقام/الوحدات · سلامة اللغة · حفظ الأسلوب · عدم الاجتهاد · المراجع المعتمدة · المراجعة النهائية. (أسماء العلم والعلامة التجارية «JobMatch» تبقى دون تغيير.)
 
-### 3.6 أدوات الجودة والأتمتة (`scripts/i18n/`) + أوامر npm
-- `npm run i18n:gen` — توليد السجلّ من الملفّات.
-- `npm run i18n:sync` — تسقيف المفاتيح الناقصة بقيم إنجليزيّة (لئلّا تكسر لغة جزئيّة البناء).
-- `npm run i18n:audit` — تدقيق المطابقة: **حرج (يفشل):** مفتاح مفقود/قيمة فارغة/رقم محذوف/«JobMatch» محذوف/إيموجي محذوف/عدم تطابق السجلّ. **ليّن (تنبيه):** مسافات، مطابق للإنجليزية، مفاتيح زائدة. (مُحلِّل regex آمن بلا تنفيذ كود.)
-- `npm run i18n:consistency` — اتّساق معجميّ: أي قيمة إنجليزيّة متكرّرة تُترجَم بصياغة واحدة/لغة (باستثناء `contextDivergent`: `jobs`/`Post`/`Offer`/`Jobs in`).
-- `npm run i18n:normalize` — تطبيق المسرد المعتمد (`i18n.config.json → glossary`، idempotent).
-- `npm run i18n:check` — البوّابة: `gen + audit + consistency`.
-
-### 3.7 البوّابات الآليّة (تمنع ترجمة ناقصة/غير متّسقة)
+### 3.6 البوّابات الآليّة (تمنع ترجمة ناقصة/غير متّسقة)
 - **محليًّا:** `predev` و`prebuild` يُشغّلان `gen→audit→consistency`؛ فشلها يُجهض `npm run build`.
-- **CI:** `.github/workflows/i18n.yml` يُولّد السجلّ، يفشل على سجلّ قديم (`git diff --exit-code` للملفّين المولّدين)، ثمّ audit+consistency على push/PR.
+- **CI:** `.github/workflows/i18n.yml` يُولّد السجلّ، يفشل على سجلّ قديم (`git diff --exit-code` للملفّين المولّدين)، ثمّ audit+consistency على push/PR. (الملفّ على القرص؛ يُضاف للريموت عبر واجهة GitHub أو رمز وصول بصلاحيّة `workflow`.)
 - **النشر:** أوامر بناء Render/Railway/Vercel كلّها `npm run build` فتُطلق البوّابة عند النشر.
 - **الملفّان المولّدان مُلتزَمان (committed) ولا يُحرَّران يدويًّا.**
 
@@ -80,7 +73,7 @@
 ## 4) المزايا حسب المجال (كلّها مُنفَّذة ومُتحقَّقة ما لم يُذكر غير ذلك)
 
 ### 4.1 الهوية والوصول
-✅ تسجيل/دخول بأدوار (bcrypt + JWT) · لوحات تحكّم للباحث والشركة والأدمن · `NEXTAUTH_SECRET` إلزاميّ.
+✅ تسجيل/دخول بأدوار (bcrypt + JWT) · لوحات تحكّم للباحث والشركة والأدمن · `NEXTAUTH_SECRET` إلزاميّ من البيئة.
 
 ### 4.2 الباحث عن عمل
 ✅ ملف شخصيّ (جنسية/تأشيرة/تخصص/موقع/خبرة/مهارات) · رفع CV (PDF/لصق) + استخراج بالـAI + اقتراحات تحسين · سير ذاتية متعدّدة (`Resume`، أساسيّة + تنزيل محميّ) · إدارة الظهور (`isSearchable` + تعزيز Rank Booster + تحديث) · توصية وظائف تلقائيّة بالتوافق · تنبيهات وظائف (`JobAlert`) · صندوق الدعوات والعروض.
@@ -124,49 +117,66 @@
 - بوّابة الاشتراك على مساري النشر (لا تجاوز) + فرض الانتهاء + حظر الحسابات.
 - حماية `/api/cron/scrape` بـ`CRON_SECRET` (Bearer) · حارس جلسة على `parse-cv` · تحقّق صحّة حالة الطلب.
 - وصول السير الذاتية محميّ (`/api/cv/[userId]` للمالك/الأدمن/الموظِّف المتلقّي، تحقّق regex ضدّ traversal).
-- إجراءات الأدمن تعيد التحقّق من الدور · `_load.js` بلا تنفيذ كود (مُحلِّل آمن).
-- **إدارة الأسرار:** `NEXTAUTH_SECRET` من البيئة فقط (لا بديل في الكود، fail-closed) · `.env`/`prisma/dev.db` غير متعقَّبَين (`.gitignore` + `!.env.example` للقالب) · **حارس أسرار تلقائيّ** (`scripts/secret-guard.js`) مُركَّب كـpre-commit (يُثبَّت ذاتيًّا عبر `npm run prepare`/`prepare`) يمنع التزام ملفّات env/مفاتيح أو أسرار معروفة؛ فحص يدويّ `npm run security:scan`.
-- **ترويسات أمان HTTP** (في `next.config.ts` لكل المسارات): `X-Content-Type-Options: nosniff` · `X-Frame-Options: SAMEORIGIN` · `Referrer-Policy: strict-origin-when-cross-origin` · `Permissions-Policy` (camera/mic/geo معطّلة) · `Strict-Transport-Security` (HSTS) · `Content-Security-Policy` (`frame-ancestors 'self'; object-src 'none'; base-uri 'self'` — توجيهات غير كاسرة) · **`X-Powered-By` معطّل**.
-- **تبعيات (`npm audit`):** 4 ثغرات moderate **متعدّية** فقط (postcss عبر next · uuid عبر next-auth)؛ لم تُفرَض إصلاحاتها لأنّ `npm audit fix --force` يُنزِل next→v9 وnext-auth→v3 (تحطيم). تُحلّ بتحديث من المنبع؛ مخاطرها العمليّة منخفضة (مسارات غير مستخدمة/CSS أوّليّ).
-- **تنبيه قائم (يحتاج إجراء المالك):** `NEXTAUTH_SECRET` قديم مكشوف في تاريخ git على origin (commit رفع سابق) — دُوِّر محليًّا؛ يجب **تدوير سرّ الإنتاج** على المنصّة، ولتطهير التاريخ يلزم إعادة كتابته (BFG/`git filter-repo`) بموافقة صريحة.
+- إجراءات الأدمن تعيد التحقّق من الدور · أدوات i18n تقرأ القواميس بمُحلِّل regex آمن (بلا تنفيذ كود).
+- **إدارة الأسرار:** `NEXTAUTH_SECRET` من البيئة فقط (لا بديل في الكود، fail-closed) · `.env`/`prisma/dev.db` غير متعقَّبَين (`.gitignore` + `!.env.example` للقالب) · **حارس أسرار تلقائيّ** (`scripts/secret-guard.js`) مُركَّب كـpre-commit (يُثبَّت ذاتيًّا عبر `prepare`) يمنع التزام ملفّات env/مفاتيح أو أسرار معروفة (Stripe/OpenAI/AWS/GitHub/Slack/مفاتيح خاصّة)؛ فحص يدويّ `npm run security:scan`.
+- **ترويسات أمان HTTP** (في `next.config.ts` لكل المسارات): `X-Content-Type-Options: nosniff` · `X-Frame-Options: SAMEORIGIN` · `Referrer-Policy: strict-origin-when-cross-origin` · `Permissions-Policy` (camera/mic/geo معطّلة) · `Strict-Transport-Security` (HSTS) · `X-DNS-Prefetch-Control: on` · `Content-Security-Policy` (`frame-ancestors 'self'; object-src 'none'; base-uri 'self'` — توجيهات غير كاسرة) · **`X-Powered-By` معطّل**.
+- **تبعيات (`npm audit`):** 4 ثغرات moderate **متعدّية** فقط (postcss عبر next · uuid عبر next-auth)؛ لم تُفرَض إصلاحاتها لأنّ `npm audit fix --force` يُنزِل next→v9 وnext-auth→v3 (تحطيم). تُحلّ بتحديث من المنبع؛ مخاطرها العمليّة منخفضة.
+- **تنبيه قائم (يحتاج إجراء المالك — لم يُنفَّذ):** `NEXTAUTH_SECRET` قديم مكشوف في تاريخ git على origin (commit رفع سابق) — دُوِّر **محليًّا**؛ يجب **تدوير سرّ الإنتاج** على لوحة المنصّة (هو العلاج الفعليّ). تطهير التاريخ (BFG/`git filter-repo` + force-push) **مدمّر للريموت ولم يُنفَّذ** — يحتاج قرارًا صريحًا منفصلًا.
 
 ---
 
 ## 7) الأداء (مُطبَّق)
-- `getDictionary` بـmemoization (Map/لغة) · `getLocale`+`getEnabledLocales` بـ`react cache()` (قراءة واحدة/طلب).
+- `getDictionary` بـmemoization (Map/لغة) · `getLocale`+`getEnabledLocales` بـ`react cache()` (قراءة كوكي/DB مرّة/طلب).
 - استعلامات مُحسّنة: `groupBy`/`aggregate` بدل سحب الصفوف (companies/admin/analytics) · فهارس على FK/الترتيب · حدود `take`.
 
 ---
 
-## 8) الصفحات (37)
+## 8) السكربتات والأتمتة (أوامر npm + `scripts/`)
+- **التطوير/البناء:** `dev` · `predev` (يُولّد سجلّ اللغات) · `build` (`prisma generate && next build`؛ يسبقه `prebuild`) · `start` · `lint`.
+- **بوّابة i18n:** `i18n:gen` (توليد السجلّ) · `i18n:sync` (تسقيف المفاتيح الناقصة) · `i18n:audit` (مطابقة: أرقام/علامة/إيموجي/اكتمال/تطابق السجلّ) · `i18n:consistency` (اتّساق معجميّ، استثناء `contextDivergent`: jobs/Post/Offer/"Jobs in") · `i18n:normalize` (تطبيق المسرد) · `i18n:check` = gen+audit+consistency (البوّابة).
+- **الأمان:** `security:scan` (حارس الأسرار يدويًّا) · `prepare` (يُثبّت خطّاف pre-commit تلقائيًّا عند `npm install`، يتخطّى بأمان حيث لا `.git`).
+- **`scripts/`:** `i18n/` (`_load.js` · `gen-registry.js` · `audit.js` · `glossary_check.js` · `glossary_apply.js` · `sync-keys.js` · `i18n.config.json` · `README.md`) · `secret-guard.js` · `install-git-hooks.js`.
+
+## 9) نظافة المستودع و Git
+- `.env` و`prisma/dev.db` **غير متعقَّبَين** (محفوظان على القرص للتطوير)؛ `.gitignore` يغطّي `.env*` (مع `!.env.example`) · `dev.log` · `/dev.db` · `/prisma/dev.db`.
+- **خطّاف pre-commit** (حارس الأسرار) يُثبَّت ذاتيًّا عبر `prepare` ويمنع تسريب الأسرار مستقبلًا.
+- ملفّات i18n المولّدة مُلتزَمة (لا تُحرَّر يدويًّا).
+- الريموت: `origin → github.com/hamdanma71/job-board` · الفرع العامل `feat/i18n-10-languages-and-cleanup` مدفوع.
+- ⚠️ **لم تُنفَّذ** أي إعادة كتابة تاريخ أو `force-push` (إجراء مدمّر يحتاج موافقة صريحة).
+
+---
+
+## 10) الصفحات (36)
 `/` · `/login` · `/register` · `/jobs` · `/jobs/[id]` · `/jobs/remote` · `/jobs/executive` · `/jobs/category/[slug]` · `/companies` · `/companies/[id]` · `/salaries` · `/locations` · `/locations/[country]` · `/categories` · `/employers` · `/blog` · `/podcasts` · `/resources` · `/skills` · `/skills/[id]` · `/network` · `/messages` · `/pricing` · `/premium` · `/admin` · لوحات `/dashboard/candidate(+/alerts,/notifications,/upload-cv)` · `/dashboard/employer(+/post-job,/candidates,/saved,/analytics,/applications/[id],/jobs/[id])`.
 
-## 9) مسارات API (≈52)
+## 11) مسارات API (50)
 `/auth/*` · `/ai/*` (9) · `/jobs` · `/employer/jobs` · `/applications(+/[id]/{comment,interview,offer,promote,scorecard})` · `/candidates/{search,save,invite}` · `/candidate/{profile,visibility}` · `/resumes(+/[id]/file)` · `/companies/[id]/{follow,interview-review}` · `/company/profile` · `/reviews` · `/posts(+/[id]/{react,comments})` · `/connections(+/[id])` · `/endorse` · `/conversations` · `/messages` · `/alerts(+/[id])` · `/invitations/[id]` · `/offers/[id]` · `/notifications` · `/cv/[userId]` · `/checkout` · `/webhooks/stripe` · `/cron/scrape` · `/skills/[id]/submit`.
 
 ---
 
-## 10) التشغيل المحليّ
-1. `npm install` · `npx prisma db push` (SQLite، القاعدة `prisma/dev.db`).
-2. `npm run dev` (المنفذ 3000؛ `predev` يُولّد سجلّ اللغات أوّلًا).
-3. **لا تُشغّل `npx tsc` بالتوازي مع `next dev`** (نفاد ذاكرة V8 — افصل بينهما).
+## 12) التشغيل المحليّ
+1. `npm install` (يُثبّت خطّاف الأمان عبر `prepare`) · `npx prisma db push` (SQLite، القاعدة `prisma/dev.db`).
+2. أنشئ `.env` من `.env.example` واضبط `NEXTAUTH_SECRET` وغيره.
+3. `npm run dev` (المنفذ 3000؛ `predev` يُولّد سجلّ اللغات أوّلًا).
+4. **لا تُشغّل `npx tsc` بالتوازي مع `next dev`** (نفاد ذاكرة V8 — افصل بينهما).
 
-## 11) النشر (Production)
+## 13) النشر (Production)
 1. **قاعدة البيانات:** بدّل `provider` إلى `postgresql` في `schema.prisma`، اضبط `DATABASE_URL` على Postgres مُدار، استخدم `prisma migrate deploy`.
 2. **متغيّرات البيئة:** `DATABASE_URL` · `NEXTAUTH_SECRET` · `NEXTAUTH_URL` · `OPENAI_API_KEY` · `STRIPE_SECRET_KEY` · `STRIPE_WEBHOOK_SECRET` · `CRON_SECRET`.
 3. **أمر البناء على كل المنصّات `npm run build`** (Render/Railway/Vercel) ⇒ يُطلق بوّابة i18n قبل البناء.
 4. **Cron:** `vercel.json` يستدعي `/api/cron/scrape` كل 6 ساعات بـ`Authorization: Bearer ${CRON_SECRET}`.
 
-## 12) يحتاج خدمات خارجية (⬜ غير مُفعّل محليًّا)
-- **Postgres حيّ** · **Redis** (تخزين/طوابير) · **Elasticsearch/Algolia** (بحث متقدّم) · **تخزين سحابيّ** (S3/Blob للسير بدل القرص) · **Worker** لإرسال تنبيهات `JobAlert` فعليًّا.
+## 14) يحتاج خدمات خارجية (⬜ غير مُفعّل محليًّا)
+- **Postgres حيّ** · **Redis** (تخزين/طوابير + تحديد معدّل) · **Elasticsearch/Algolia** (بحث متقدّم) · **تخزين سحابيّ** (S3/Blob للسير بدل القرص) · **Worker** لإرسال تنبيهات `JobAlert` فعليًّا.
 
-## 13) خارطة مستقبليّة (⬜)
+## 15) خارطة مستقبليّة (⬜)
 بقيّة مصادر الإيراد (pay-per-click / بيع وصول CV / Employer Branding) · مقابلات فيديو ذكيّة · تطبيقات هاتف · توسّع لغويّ (مرحلة ثالثة — تُتبنّى تلقائيًّا بإسقاط الملفّات) · سوق العمل الحرّ.
 
 ---
 
-## 14) دليل الصيانة السريع
+## 16) دليل الصيانة السريع
 - **إضافة لغة:** §3.3 (إسقاط ملفّ + `npm run i18n:gen`).
 - **قبل اعتماد أي ترجمة:** `npm run i18n:check` (يجب: HARD 0 · registry ok · REAL inconsistencies 0).
 - **توحيد مصطلح:** أضِفه إلى `i18n.config.json → glossary` ثمّ `npm run i18n:normalize`.
+- **فحص أمنيّ سريع:** `npm run security:scan` (وحارس pre-commit يعمل تلقائيًّا عند كل التزام).
 - **تعديل سلوك/مخطّط:** حدّث هذا الملف (§ المعنيّ + النسخة + التاريخ) ليبقى المرجع المعتمد موحّدًا.

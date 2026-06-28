@@ -16,6 +16,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Don't leak the framework version.
   poweredByHeader: false,
+  // Native/Node-only libs must NOT be bundled by Next/Turbopack for the server
+  // runtime, or pdfjs (DOMMatrix/worker) + canvas break at runtime, which made
+  // PDF CV text-extraction fail. Load them from node_modules instead.
+  serverExternalPackages: ["pdf-parse", "pdfjs-dist", "@napi-rs/canvas"],
   // Pre-existing TS errors are intentionally not build-blocking (kept for stability).
   typescript: {
     ignoreBuildErrors: true,
