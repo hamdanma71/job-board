@@ -46,20 +46,77 @@ export async function generateJobDescription(title: string, basicRequirements: s
 /**
  * Parses a candidate's CV text to extract structured data using structured outputs (JSON).
  */
+// Curated skill keywords (EN + AR) used by the no-OpenAI heuristic parser.
+const CV_SKILL_KEYWORDS = [
+  "javascript", "typescript", "react", "next.js", "nextjs", "node", "node.js", "vue", "angular",
+  "python", "django", "flask", "java", "kotlin", "swift", "c++", "c#", ".net", "php", "laravel",
+  "go", "rust", "ruby", "rails", "sql", "mysql", "postgresql", "postgres", "mongodb", "redis",
+  "aws", "azure", "gcp", "docker", "kubernetes", "terraform", "git", "ci/cd", "linux",
+  "html", "css", "sass", "tailwind", "bootstrap", "graphql", "rest", "api",
+  "figma", "sketch", "photoshop", "illustrator", "ui", "ux", "design",
+  "excel", "word", "powerpoint", "power bi", "tableau", "data analysis", "machine learning",
+  "seo", "sem", "marketing", "social media", "content", "copywriting", "sales", "crm", "salesforce",
+  "accounting", "finance", "audit", "quickbooks", "sap", "hr", "recruitment", "project management",
+  "agile", "scrum", "leadership", "communication", "negotiation", "customer service",
+  "تطوير", "برمجة", "تصميم", "تسويق", "مبيعات", "محاسبة", "مالية", "تدقيق", "إدارة", "قيادة",
+  "تواصل", "خدمة العملاء", "تحليل البيانات", "موارد بشرية", "هندسة", "مشاريع", "تفاوض",
+];
+
+/** Best-effort CV parsing without an LLM — extracts from the real text. */
+function heuristicParseCV(cvText: string): Record<string, any> {
+  const text = (cvText || "").trim();
+  const lower = text.toLowerCase();
+
+  // Skills: keywords actually present in the CV (deduped, capped).
+  const seen = new Set<string>();
+  const skills: string[] = [];
+  for (const kw of CV_SKILL_KEYWORDS) {
+    if (lower.includes(kw.toLowerCase()) && !seen.has(kw.toLowerCase())) {
+      seen.add(kw.toLowerCase());
+      skills.push(kw);
+      if (skills.length >= 15) break;
+    }
+  }
+
+  // Experience years: largest "N years / N سنوات" mention.
+  let experienceYears: number | undefined;
+  const matches = lower.match(/(\d{1,2})\s*\+?\s*(?:years|yrs|year|سنوات|سنة|عام|أعوام)/g);
+  if (matches) {
+    for (const m of matches) {
+      const n = parseInt(m, 10);
+      if (!isNaN(n)) experienceYears = Math.max(experienceYears ?? 0, n);
+    }
+  }
+
+  // Bio: first few meaningful lines of the CV (so it reflects this candidate).
+  const bio = text
+    .split(/\r?\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .slice(0, 3)
+    .join(" ")
+    .slice(0, 240) || undefined;
+
+  // Leave location/nationality/visaStatus/specialization undefined when unknown
+  // so the profile upsert keeps any existing values instead of blanking them.
+  return {
+    skills: skills.length ? skills : undefined,
+    experienceYears,
+    bio,
+    location: undefined,
+    nationality: undefined,
+    visaStatus: undefined,
+    specialization: undefined,
+  };
+}
+
 export async function parseCV(cvText: string) {
   if (!openai) {
-    // Return dummy data for testing purposes
-    console.log("No OPENAI_API_KEY found, returning dummy parsed CV data.");
-    await new Promise(res => setTimeout(res, 2000));
-    return {
-      skills: ["إدارة الوقت", "التواصل الفعال", "استخدام الحاسب الآلي", "مهارات قيادية", "حل المشكلات"],
-      experienceYears: 4,
-      location: "الرياض، السعودية",
-      bio: "محترف ذو خبرة مميزة في مجال العمل، مستعد لتقديم حلول إبداعية وإضافة قيمة حقيقية للشركة.",
-      nationality: "",
-      visaStatus: "",
-      specialization: "تطوير البرمجيات"
-    };
+    // No OpenAI key: derive fields from the ACTUAL CV text (heuristic) so different
+    // CVs produce different profiles. Undetected fields are left undefined so the
+    // upsert never overwrites existing profile data with blanks.
+    console.log("No OPENAI_API_KEY found — using local heuristic CV parser.");
+    return heuristicParseCV(cvText);
   }
 
   const response = await openai.chat.completions.create({

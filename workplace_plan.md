@@ -14,7 +14,7 @@
 - **الخلفية:** Next.js API Routes · NextAuth (Credentials + JWT، أدوار CANDIDATE/EMPLOYER/ADMIN).
 - **قاعدة البيانات:** Prisma ORM — **محليًّا SQLite** (`prisma/dev.db`)، **للإنتاج PostgreSQL** (انظر §13).
 - **المدفوعات:** Stripe (Checkout + Webhook موقّع + idempotency). **العملة المعتمدة عبر المنصّة: الدرهم الإماراتي (AED / د.إ).**
-- **الذكاء الاصطناعي:** OpenAI (`gpt-4o-mini`، JSON mode) مع بدائل تجريبية آمنة عند غياب المفتاح.
+- **الذكاء الاصطناعي:** OpenAI (`gpt-4o-mini`، JSON mode) مع بدائل آمنة عند غياب المفتاح؛ **تحليل السيرة () يستخدم مُحلِّلًا استدلاليًّا محليًّا** يستخرج المهارات/سنوات الخبرة/النبذة من نصّ السيرة الفعليّ (لا بيانات ثابتة).
 - **استخراج نصّ السيرة (PDF):** `pdf-parse` v2 (يعتمد `pdfjs-dist` + `@napi-rs/canvas`) — مُستثناة من حزم الخادم عبر `serverExternalPackages` في `next.config.ts` (إلزاميّ؛ بدونه تفشل القراءة في بيئة Next/Turbopack).
 
 ---

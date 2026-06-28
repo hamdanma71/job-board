@@ -13,6 +13,9 @@ import { calculateMatchScore } from "@/lib/matching";
 import { statusLabel, statusColor } from "@/lib/applicationStatus";
 import { getLocale, getDictionary } from "@/lib/i18n";
 
+// Always render fresh so a just-uploaded CV / edited profile shows immediately.
+export const dynamic = "force-dynamic";
+
 export default async function CandidateDashboard() {
   const dict = getDictionary(await getLocale());
   const t = (k: string) => dict[k] ?? k;
