@@ -32,7 +32,7 @@
 
 **قيود وفهارس بارزة:** `Application @@unique([jobId,candidateId])` · `Review @@unique([companyId,reviewerId])` · `Conversation @@unique([userAId,userBId])` · `CompanyFollow @@unique([userId,companyId])` · `AppSetting.key @unique` · فهارس على كل المفاتيح الأجنبيّة وأعمدة الترتيب الساخنة.
 
-**حقول مفتاحيّة:** `Application.status` (ATS 7 مراحل، المصدر الموحّد `src/lib/applicationStatus.ts`) · `Application.promoted` · `CompanyProfile.{subscriptionTier, subscriptionEndsAt, isVerified, isBanned, isStartup, stage, fundingRaised, teamSize}` · `CandidateProfile.{plan(FREE/PREMIUM), planEndsAt, isSearchable, rankBoostedUntil, nationality, visaStatus, specialization}` · `Job.{source, externalUrl, featured, salaryMin, salaryMax, experienceMin}`.
+**حقول مفتاحيّة:** `Application.status` (ATS 7 مراحل، المصدر الموحّد `src/lib/applicationStatus.ts`) · `Application.promoted` · `CompanyProfile.{subscriptionTier, subscriptionEndsAt, isVerified, isBanned, isStartup, stage, fundingRaised, teamSize}` · `CandidateProfile.{plan(FREE/PREMIUM), planEndsAt, isSearchable, rankBoostedUntil, nationality, visaStatus, specialization, dateOfBirth, gender, maritalStatus, languages, religion, drivingLicense, visaExpiry, altEmail, altPhone}` · `Job.{source, externalUrl, featured, salaryMin, salaryMax, experienceMin}`.
 
 ---
 
@@ -76,7 +76,7 @@
 ✅ تسجيل/دخول بأدوار (bcrypt + JWT) · لوحات تحكّم للباحث والشركة والأدمن · `NEXTAUTH_SECRET` إلزاميّ من البيئة.
 
 ### 4.2 الباحث عن عمل
-✅ ملف شخصيّ (جنسية/تأشيرة/تخصص/موقع/خبرة/مهارات) · رفع CV (PDF/لصق) + استخراج بالـAI + اقتراحات تحسين · سير ذاتية متعدّدة (`Resume`، أساسيّة + تنزيل محميّ) · إدارة الظهور (`isSearchable` + تعزيز Rank Booster + تحديث) · توصية وظائف تلقائيّة بالتوافق · تنبيهات وظائف (`JobAlert`) · صندوق الدعوات والعروض.
+✅ ملف شخصيّ موسّع (جنسية/تأشيرة/تخصص/موقع/خبرة/مهارات + تاريخ ميلاد/جنس/حالة اجتماعية/لغات/ديانة/رخصة قيادة/انتهاء تأشيرة/بريد+هاتف بديل) — تُستخرج تلقائيًّا من قسم «التفاصيل الشخصية» في السيرة (تسميات عربيّة/إنجليزيّة) وتُعرَض/تُحرَّر · رفع CV (PDF/لصق) + استخراج بالـAI + اقتراحات تحسين · سير ذاتية متعدّدة (`Resume`، أساسيّة + تنزيل محميّ) · إدارة الظهور (`isSearchable` + تعزيز Rank Booster + تحديث) · توصية وظائف تلقائيّة بالتوافق · تنبيهات وظائف (`JobAlert`) · صندوق الدعوات والعروض.
 
 ### 4.3 الشركة و ATS (عمق Greenhouse/Lever)
 ✅ نشر وظائف (مبوّب بالاشتراك) · لوحة متقدّمين بترتيب توافق تلقائيّ + تمييز الطلبات (`promoted`) · **ATS 7 مراحل** · بطاقات تقييم (`Scorecard`) + ملاحظات فريق + عروض (`Offer`) · جدولة مقابلات (`Interview`) + إشعار · **تحليلات قمع التوظيف** (`/dashboard/employer/analytics`).
