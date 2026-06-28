@@ -95,6 +95,12 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // null/""/"null" -> undefined so missing values never overwrite existing ones.
+      const nz = (v: any) => (v === null || v === undefined || v === "" || v === "null" ? undefined : v);
+      const languages = Array.isArray(parsedData.languages)
+        ? parsedData.languages.join("، ")
+        : nz(parsedData.languages);
+
       const data = {
         bio: parsedData.bio,
         skills: JSON.stringify(parsedData.skills),
@@ -103,6 +109,15 @@ export async function POST(req: NextRequest) {
         nationality: parsedData.nationality,
         visaStatus: parsedData.visaStatus,
         specialization: parsedData.specialization,
+        dateOfBirth: nz(parsedData.dateOfBirth),
+        gender: nz(parsedData.gender),
+        maritalStatus: nz(parsedData.maritalStatus),
+        languages,
+        religion: nz(parsedData.religion),
+        drivingLicense: nz(parsedData.drivingLicense),
+        visaExpiry: nz(parsedData.visaExpiry),
+        altEmail: nz(parsedData.altEmail),
+        altPhone: nz(parsedData.altPhone),
         ...(resumeUrl ? { resumeUrl } : {}),
       };
 

@@ -215,6 +215,17 @@ model CandidateProfile {
   visaStatus      String?
   specialization  String?
 
+  // Extended personal details (parsed from CV "personal details" sections)
+  dateOfBirth     String?
+  gender          String?
+  maritalStatus   String?
+  languages       String?   // comma-separated, e.g. "العربية, الإنجليزية"
+  religion        String?
+  drivingLicense  String?
+  visaExpiry      String?
+  altEmail        String?
+  altPhone        String?
+
   // CV-search visibility + premium ranking (Bayt-style)
   isSearchable     Boolean   @default(true)   // candidate opts into recruiter CV search
   rankBoostedUntil DateTime?                   // Rank Booster active until this time

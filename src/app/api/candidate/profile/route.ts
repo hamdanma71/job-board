@@ -15,8 +15,10 @@ export async function PUT(req: NextRequest) {
 
     const userId = (session.user as any).id;
     const body = await req.json();
-    const { name, bio, skills, location, experienceYears, expectedSalary, nationality, visaStatus, specialization } = body;
+    const { name, bio, skills, location, experienceYears, expectedSalary, nationality, visaStatus, specialization,
+      dateOfBirth, gender, maritalStatus, languages, religion, drivingLicense, visaExpiry, altEmail, altPhone } = body;
     const normalizedSkills = skills !== undefined ? serializeSkills(skills) : undefined;
+    const extra = { dateOfBirth, gender, maritalStatus, languages, religion, drivingLicense, visaExpiry, altEmail, altPhone };
 
     // Update User name
     if (name) {
@@ -37,7 +39,8 @@ export async function PUT(req: NextRequest) {
         expectedSalary,
         nationality,
         visaStatus,
-        specialization
+        specialization,
+        ...extra,
       },
       create: {
         userId,
@@ -48,7 +51,8 @@ export async function PUT(req: NextRequest) {
         expectedSalary,
         nationality,
         visaStatus,
-        specialization
+        specialization,
+        ...extra,
       }
     });
 

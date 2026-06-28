@@ -129,6 +129,23 @@ export default async function CandidateDashboard() {
             <p>{profile?.specialization ? profile.specialization : t("candDash.specUnset")} • {profile?.location ? profile.location : t("candDash.locationUnset")}</p>
           </div>
 
+          {(profile?.dateOfBirth || profile?.gender || profile?.maritalStatus || profile?.languages || profile?.religion || profile?.drivingLicense || profile?.visaExpiry || profile?.altEmail || profile?.altPhone) && (
+            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-light)" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "bold", marginBottom: "0.75rem" }}>{t("editProfile.additionalDetails")}</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.5rem 1.5rem", fontSize: "0.9rem" }}>
+                {profile?.dateOfBirth && <div><span className="text-muted">{t("profileFields.dateOfBirth")}: </span>{profile.dateOfBirth}</div>}
+                {profile?.gender && <div><span className="text-muted">{t("profileFields.gender")}: </span>{profile.gender}</div>}
+                {profile?.maritalStatus && <div><span className="text-muted">{t("profileFields.maritalStatus")}: </span>{profile.maritalStatus}</div>}
+                {profile?.languages && <div><span className="text-muted">{t("profileFields.languages")}: </span>{profile.languages}</div>}
+                {profile?.religion && <div><span className="text-muted">{t("profileFields.religion")}: </span>{profile.religion}</div>}
+                {profile?.drivingLicense && <div><span className="text-muted">{t("profileFields.drivingLicense")}: </span>{profile.drivingLicense}</div>}
+                {profile?.visaExpiry && <div><span className="text-muted">{t("profileFields.visaExpiry")}: </span>{profile.visaExpiry}</div>}
+                {profile?.altEmail && <div><span className="text-muted">{t("profileFields.altEmail")}: </span>{profile.altEmail}</div>}
+                {profile?.altPhone && <div><span className="text-muted">{t("profileFields.altPhone")}: </span>{profile.altPhone}</div>}
+              </div>
+            </div>
+          )}
+
           <div style={{ marginBottom: "1.5rem", padding: "1rem" }}>
             <p className="text-muted" style={{ fontSize: "0.9rem", marginBottom: "0.5rem" }}>{t("candDash.bio")}</p>
             <p>{profile?.bio || t("candDash.bioEmpty")}</p>
@@ -164,7 +181,7 @@ export default async function CandidateDashboard() {
           </div>
           
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <EditProfileModal 
+            <EditProfileModal
               initialName={(session.user as any).name || ""}
               initialBio={profile?.bio || ""}
               initialSkills={profile?.skills || ""}
@@ -173,6 +190,15 @@ export default async function CandidateDashboard() {
               initialNationality={profile?.nationality || ""}
               initialVisaStatus={profile?.visaStatus || ""}
               initialSpecialization={profile?.specialization || ""}
+              initialDateOfBirth={profile?.dateOfBirth || ""}
+              initialGender={profile?.gender || ""}
+              initialMaritalStatus={profile?.maritalStatus || ""}
+              initialLanguages={profile?.languages || ""}
+              initialReligion={profile?.religion || ""}
+              initialDrivingLicense={profile?.drivingLicense || ""}
+              initialVisaExpiry={profile?.visaExpiry || ""}
+              initialAltEmail={profile?.altEmail || ""}
+              initialAltPhone={profile?.altPhone || ""}
             />
             <CVUploadButton />
           </div>

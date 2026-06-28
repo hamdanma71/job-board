@@ -5,24 +5,42 @@ import CountrySelect from "@/components/CountrySelect";
 import { NATIONALITIES } from "@/lib/worldCountries";
 import { useT } from "@/components/I18nProvider";
 
-export default function EditProfileModal({ 
-  initialName, 
-  initialBio, 
-  initialSkills, 
-  initialLocation, 
+export default function EditProfileModal({
+  initialName,
+  initialBio,
+  initialSkills,
+  initialLocation,
   initialExperience,
   initialNationality,
   initialVisaStatus,
-  initialSpecialization
-}: { 
-  initialName: string, 
-  initialBio: string, 
+  initialSpecialization,
+  initialDateOfBirth = "",
+  initialGender = "",
+  initialMaritalStatus = "",
+  initialLanguages = "",
+  initialReligion = "",
+  initialDrivingLicense = "",
+  initialVisaExpiry = "",
+  initialAltEmail = "",
+  initialAltPhone = "",
+}: {
+  initialName: string,
+  initialBio: string,
   initialSkills: string,
   initialLocation: string,
   initialExperience: number,
   initialNationality: string,
   initialVisaStatus: string,
-  initialSpecialization: string
+  initialSpecialization: string,
+  initialDateOfBirth?: string,
+  initialGender?: string,
+  initialMaritalStatus?: string,
+  initialLanguages?: string,
+  initialReligion?: string,
+  initialDrivingLicense?: string,
+  initialVisaExpiry?: string,
+  initialAltEmail?: string,
+  initialAltPhone?: string,
 }) {
   const t = useT();
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +62,17 @@ export default function EditProfileModal({
   const [nationality, setNationality] = useState(initialNationality || "");
   const [visaStatus, setVisaStatus] = useState(initialVisaStatus || "");
   const [specialization, setSpecialization] = useState(initialSpecialization || "");
-  
+
+  const [dateOfBirth, setDateOfBirth] = useState(initialDateOfBirth || "");
+  const [gender, setGender] = useState(initialGender || "");
+  const [maritalStatus, setMaritalStatus] = useState(initialMaritalStatus || "");
+  const [languages, setLanguages] = useState(initialLanguages || "");
+  const [religion, setReligion] = useState(initialReligion || "");
+  const [drivingLicense, setDrivingLicense] = useState(initialDrivingLicense || "");
+  const [visaExpiry, setVisaExpiry] = useState(initialVisaExpiry || "");
+  const [altEmail, setAltEmail] = useState(initialAltEmail || "");
+  const [altPhone, setAltPhone] = useState(initialAltPhone || "");
+
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -62,15 +90,24 @@ export default function EditProfileModal({
       const res = await fetch("/api/candidate/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          name, 
-          bio, 
-          skills: parsedSkills, 
-          location, 
+        body: JSON.stringify({
+          name,
+          bio,
+          skills: parsedSkills,
+          location,
           experienceYears,
           nationality,
           visaStatus,
-          specialization 
+          specialization,
+          dateOfBirth,
+          gender,
+          maritalStatus,
+          languages,
+          religion,
+          drivingLicense,
+          visaExpiry,
+          altEmail,
+          altPhone,
         })
       });
 
@@ -156,6 +193,52 @@ export default function EditProfileModal({
                 <div>
                   <label className="input-label">{t("editProfile.visaStatus")}</label>
                   <input type="text" className="input-field" value={visaStatus} onChange={e => setVisaStatus(e.target.value)} placeholder={t("editProfile.visaPlaceholder")} />
+                </div>
+              </div>
+
+              <h3 style={{ fontSize: "1rem", fontWeight: "bold", marginTop: "0.5rem", borderTop: "1px solid var(--border-light)", paddingTop: "1rem" }}>{t("editProfile.additionalDetails")}</h3>
+              <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", margin: 0 }}>
+                <div>
+                  <label className="input-label">{t("profileFields.dateOfBirth")}</label>
+                  <input type="text" className="input-field" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} placeholder={t("profileFields.dobPlaceholder")} />
+                </div>
+                <div>
+                  <label className="input-label">{t("profileFields.gender")}</label>
+                  <input type="text" className="input-field" value={gender} onChange={e => setGender(e.target.value)} />
+                </div>
+              </div>
+              <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", margin: 0 }}>
+                <div>
+                  <label className="input-label">{t("profileFields.maritalStatus")}</label>
+                  <input type="text" className="input-field" value={maritalStatus} onChange={e => setMaritalStatus(e.target.value)} />
+                </div>
+                <div>
+                  <label className="input-label">{t("profileFields.religion")}</label>
+                  <input type="text" className="input-field" value={religion} onChange={e => setReligion(e.target.value)} />
+                </div>
+              </div>
+              <div className="input-group" style={{ margin: 0 }}>
+                <label className="input-label">{t("profileFields.languages")}</label>
+                <input type="text" className="input-field" value={languages} onChange={e => setLanguages(e.target.value)} placeholder={t("profileFields.languagesPlaceholder")} />
+              </div>
+              <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", margin: 0 }}>
+                <div>
+                  <label className="input-label">{t("profileFields.drivingLicense")}</label>
+                  <input type="text" className="input-field" value={drivingLicense} onChange={e => setDrivingLicense(e.target.value)} />
+                </div>
+                <div>
+                  <label className="input-label">{t("profileFields.visaExpiry")}</label>
+                  <input type="text" className="input-field" value={visaExpiry} onChange={e => setVisaExpiry(e.target.value)} />
+                </div>
+              </div>
+              <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", margin: 0 }}>
+                <div>
+                  <label className="input-label">{t("profileFields.altEmail")}</label>
+                  <input type="email" className="input-field" value={altEmail} onChange={e => setAltEmail(e.target.value)} />
+                </div>
+                <div>
+                  <label className="input-label">{t("profileFields.altPhone")}</label>
+                  <input type="text" className="input-field" value={altPhone} onChange={e => setAltPhone(e.target.value)} />
                 </div>
               </div>
 

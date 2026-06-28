@@ -69,6 +69,15 @@ const CV_FIELD_LABELS: Record<string, string[]> = {
   location: ["الموقع الحالي", "الموقع", "العنوان", "المدينة", "current location", "location", "address", "city"],
   visaStatus: ["وضع التأشيرة للموقع الحالي", "وضع التأشيرة", "حالة التأشيرة", "التأشيرة", "الإقامة", "visa status", "visa", "residency"],
   specialization: ["المسمى الوظيفي", "المسمّى الوظيفي", "التخصص", "الوظيفة الحالية", "المهنة", "job title", "title", "current position", "occupation"],
+  dateOfBirth: ["تاريخ الميلاد", "date of birth", "dob", "birth date", "birthday"],
+  gender: ["الجنس", "النوع", "gender", "sex"],
+  maritalStatus: ["الحالة الاجتماعية", "الحالة الإجتماعية", "marital status", "marital"],
+  languages: ["اللغات المعروفة", "اللغات", "languages known", "languages"],
+  religion: ["الديانة", "الدين", "religion"],
+  drivingLicense: ["هل لديك رخصة قيادة؟", "هل لديك رخصة قيادة", "رخصة القيادة", "رخصة قيادة", "driving license", "driving licence"],
+  visaExpiry: ["تاريخ انتهاء صلاحية التأشيرة", "تاريخ انتهاء التأشيرة", "انتهاء التأشيرة", "visa expiry", "visa expiration", "visa expiry date"],
+  altEmail: ["البريد الإلكتروني البديل", "البريد البديل", "alternate email", "alternative email", "secondary email"],
+  altPhone: ["رقم اتصال بديل", "رقم اتصال إضافي", "هاتف بديل", "alternate phone", "alternative phone", "secondary phone"],
 };
 // Lines that are pure section noise — never used as a value or bio.
 const CV_NOISE = ["التفاصيل الشخصية", "تعديل", "personal details", "edit", "السيرة الذاتية", "resume", "cv"];
@@ -85,13 +94,13 @@ function valueForLabels(lines: string[], labels: string[]): string | undefined {
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i].trim();
     const lower = raw.toLowerCase();
+    const cIdx = raw.search(/[:：]/);
     for (const lab of labs) {
-      // inline "Label: value"
-      const idx = lower.indexOf(lab);
-      const colon = raw.match(/[:：]/);
-      if (idx === 0 && colon) {
-        const after = raw.slice(raw.indexOf(colon[0]) + 1).trim();
-        if (after) return after;
+      // inline "Label: value" — the part BEFORE the colon must equal the label exactly
+      if (cIdx > 0) {
+        const before = raw.slice(0, cIdx).trim().toLowerCase();
+        const after = raw.slice(cIdx + 1).trim();
+        if (before === lab && after) return after;
       }
       // label on its own line → first following non-empty, non-label line
       if (lower.replace(/[:：]/g, "").trim() === lab) {
@@ -137,6 +146,15 @@ function heuristicParseCV(cvText: string): Record<string, any> {
   const location = valueForLabels(lines, CV_FIELD_LABELS.location);
   const visaStatus = valueForLabels(lines, CV_FIELD_LABELS.visaStatus);
   const specialization = valueForLabels(lines, CV_FIELD_LABELS.specialization);
+  const dateOfBirth = valueForLabels(lines, CV_FIELD_LABELS.dateOfBirth);
+  const gender = valueForLabels(lines, CV_FIELD_LABELS.gender);
+  const maritalStatus = valueForLabels(lines, CV_FIELD_LABELS.maritalStatus);
+  const languages = valueForLabels(lines, CV_FIELD_LABELS.languages);
+  const religion = valueForLabels(lines, CV_FIELD_LABELS.religion);
+  const drivingLicense = valueForLabels(lines, CV_FIELD_LABELS.drivingLicense);
+  const visaExpiry = valueForLabels(lines, CV_FIELD_LABELS.visaExpiry);
+  const altEmail = valueForLabels(lines, CV_FIELD_LABELS.altEmail);
+  const altPhone = valueForLabels(lines, CV_FIELD_LABELS.altPhone);
 
   // Bio: prefer an explicit summary/about section; otherwise leave undefined so a
   // personal-details-only paste never overwrites an existing bio with field noise.
@@ -165,6 +183,15 @@ function heuristicParseCV(cvText: string): Record<string, any> {
     nationality,
     visaStatus,
     specialization,
+    dateOfBirth,
+    gender,
+    maritalStatus,
+    languages,
+    religion,
+    drivingLicense,
+    visaExpiry,
+    altEmail,
+    altPhone,
   };
 }
 
@@ -193,7 +220,15 @@ export async function parseCV(cvText: string) {
   "nationality": "الجنسية، مثلا سعودي أو مصري، وإذا لم تذكر ضع null",
   "visaStatus": "حالة التأشيرة أو الإقامة، وإذا لم تذكر ضع null",
   "specialization": "التخصص الدقيق أو المسمى الوظيفي الأساسي للمرشح، وإذا لم يذكر ضع null",
-  "languages": ["اللغة 1", "اللغة 2"], // اللغات المذكورة
+  "languages": "اللغات مفصولة بفاصلة مثل: العربية، الإنجليزية، وإذا لم تذكر ضع null",
+  "dateOfBirth": "تاريخ الميلاد كما ورد نصاً، وإذا لم يذكر ضع null",
+  "gender": "الجنس (ذكر/أنثى)، وإذا لم يذكر ضع null",
+  "maritalStatus": "الحالة الاجتماعية، وإذا لم تذكر ضع null",
+  "religion": "الديانة، وإذا لم تذكر ضع null",
+  "drivingLicense": "بيان رخصة القيادة إن وُجد، وإلا null",
+  "visaExpiry": "تاريخ انتهاء التأشيرة كما ورد، وإلا null",
+  "altEmail": "بريد إلكتروني بديل إن وُجد، وإلا null",
+  "altPhone": "رقم هاتف بديل إن وُجد، وإلا null",
   "educationLevel": "مستوى التعليم (مثلاً: بكالوريوس، ماجستير) وإذا لم يذكر ضع null"
 }`
       },
