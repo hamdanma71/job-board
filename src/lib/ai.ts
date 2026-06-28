@@ -62,10 +62,54 @@ const CV_SKILL_KEYWORDS = [
   "تواصل", "خدمة العملاء", "تحليل البيانات", "موارد بشرية", "هندسة", "مشاريع", "تفاوض",
 ];
 
+// Personal-detail labels (Arabic CV / Bayt / LinkedIn exports use "Label\nValue"
+// or "Label: Value"). Used by the no-OpenAI heuristic to fill profile fields.
+const CV_FIELD_LABELS: Record<string, string[]> = {
+  nationality: ["الجنسية", "nationality"],
+  location: ["الموقع الحالي", "الموقع", "العنوان", "المدينة", "current location", "location", "address", "city"],
+  visaStatus: ["وضع التأشيرة للموقع الحالي", "وضع التأشيرة", "حالة التأشيرة", "التأشيرة", "الإقامة", "visa status", "visa", "residency"],
+  specialization: ["المسمى الوظيفي", "المسمّى الوظيفي", "التخصص", "الوظيفة الحالية", "المهنة", "job title", "title", "current position", "occupation"],
+};
+// Lines that are pure section noise — never used as a value or bio.
+const CV_NOISE = ["التفاصيل الشخصية", "تعديل", "personal details", "edit", "السيرة الذاتية", "resume", "cv"];
+
+function looksLikeLabel(line: string): boolean {
+  const norm = line.replace(/[:：]/g, "").trim().toLowerCase();
+  for (const labs of Object.values(CV_FIELD_LABELS)) if (labs.some((l) => l.toLowerCase() === norm)) return true;
+  return CV_NOISE.some((n) => norm.includes(n.toLowerCase()));
+}
+
+/** Extract a value for any of the given labels: inline "label: value" or label-then-next-line. */
+function valueForLabels(lines: string[], labels: string[]): string | undefined {
+  const labs = labels.map((l) => l.toLowerCase());
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i].trim();
+    const lower = raw.toLowerCase();
+    for (const lab of labs) {
+      // inline "Label: value"
+      const idx = lower.indexOf(lab);
+      const colon = raw.match(/[:：]/);
+      if (idx === 0 && colon) {
+        const after = raw.slice(raw.indexOf(colon[0]) + 1).trim();
+        if (after) return after;
+      }
+      // label on its own line → first following non-empty, non-label line
+      if (lower.replace(/[:：]/g, "").trim() === lab) {
+        for (let j = i + 1; j < lines.length; j++) {
+          const v = lines[j].trim();
+          if (v && !looksLikeLabel(v)) return v;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
 /** Best-effort CV parsing without an LLM — extracts from the real text. */
 function heuristicParseCV(cvText: string): Record<string, any> {
   const text = (cvText || "").trim();
   const lower = text.toLowerCase();
+  const lines = text.split(/\r?\n+/).map((l) => l.trim()).filter(Boolean);
 
   // Skills: keywords actually present in the CV (deduped, capped).
   const seen = new Set<string>();
@@ -88,25 +132,39 @@ function heuristicParseCV(cvText: string): Record<string, any> {
     }
   }
 
-  // Bio: first few meaningful lines of the CV (so it reflects this candidate).
-  const bio = text
-    .split(/\r?\n+/)
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .slice(0, 3)
-    .join(" ")
-    .slice(0, 240) || undefined;
+  // Labeled personal-detail fields.
+  const nationality = valueForLabels(lines, CV_FIELD_LABELS.nationality);
+  const location = valueForLabels(lines, CV_FIELD_LABELS.location);
+  const visaStatus = valueForLabels(lines, CV_FIELD_LABELS.visaStatus);
+  const specialization = valueForLabels(lines, CV_FIELD_LABELS.specialization);
 
-  // Leave location/nationality/visaStatus/specialization undefined when unknown
-  // so the profile upsert keeps any existing values instead of blanking them.
+  // Bio: prefer an explicit summary/about section; otherwise leave undefined so a
+  // personal-details-only paste never overwrites an existing bio with field noise.
+  const SUMMARY_LABELS = ["نبذة", "النبذة", "نبذة مختصرة", "الملخص", "الملخص الشخصي", "ملخص", "الهدف الوظيفي", "summary", "profile", "about", "objective", "professional summary"];
+  let bio: string | undefined;
+  for (let i = 0; i < lines.length; i++) {
+    const norm = lines[i].replace(/[:：]/g, "").trim().toLowerCase();
+    if (SUMMARY_LABELS.includes(norm)) {
+      const rest: string[] = [];
+      for (let j = i + 1; j < lines.length && rest.length < 3; j++) {
+        if (looksLikeLabel(lines[j]) || SUMMARY_LABELS.includes(lines[j].toLowerCase())) break;
+        rest.push(lines[j].trim());
+      }
+      if (rest.length) { bio = rest.join(" ").slice(0, 280); break; }
+    }
+    const inline = lines[i].match(/^(.*?)[:：]\s*(.+)$/);
+    if (inline && SUMMARY_LABELS.includes(inline[1].trim().toLowerCase())) { bio = inline[2].trim().slice(0, 280); break; }
+  }
+
+  // Undetected fields stay undefined so the upsert keeps existing profile values.
   return {
     skills: skills.length ? skills : undefined,
     experienceYears,
     bio,
-    location: undefined,
-    nationality: undefined,
-    visaStatus: undefined,
-    specialization: undefined,
+    location,
+    nationality,
+    visaStatus,
+    specialization,
   };
 }
 
