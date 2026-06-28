@@ -126,6 +126,8 @@
 - وصول السير الذاتية محميّ (`/api/cv/[userId]` للمالك/الأدمن/الموظِّف المتلقّي، تحقّق regex ضدّ traversal).
 - إجراءات الأدمن تعيد التحقّق من الدور · `_load.js` بلا تنفيذ كود (مُحلِّل آمن).
 - **إدارة الأسرار:** `NEXTAUTH_SECRET` من البيئة فقط (لا بديل في الكود، fail-closed) · `.env`/`prisma/dev.db` غير متعقَّبَين (`.gitignore` + `!.env.example` للقالب) · **حارس أسرار تلقائيّ** (`scripts/secret-guard.js`) مُركَّب كـpre-commit (يُثبَّت ذاتيًّا عبر `npm run prepare`/`prepare`) يمنع التزام ملفّات env/مفاتيح أو أسرار معروفة؛ فحص يدويّ `npm run security:scan`.
+- **ترويسات أمان HTTP** (في `next.config.ts` لكل المسارات): `X-Content-Type-Options: nosniff` · `X-Frame-Options: SAMEORIGIN` · `Referrer-Policy: strict-origin-when-cross-origin` · `Permissions-Policy` (camera/mic/geo معطّلة) · `Strict-Transport-Security` (HSTS) · `Content-Security-Policy` (`frame-ancestors 'self'; object-src 'none'; base-uri 'self'` — توجيهات غير كاسرة) · **`X-Powered-By` معطّل**.
+- **تبعيات (`npm audit`):** 4 ثغرات moderate **متعدّية** فقط (postcss عبر next · uuid عبر next-auth)؛ لم تُفرَض إصلاحاتها لأنّ `npm audit fix --force` يُنزِل next→v9 وnext-auth→v3 (تحطيم). تُحلّ بتحديث من المنبع؛ مخاطرها العمليّة منخفضة (مسارات غير مستخدمة/CSS أوّليّ).
 - **تنبيه قائم (يحتاج إجراء المالك):** `NEXTAUTH_SECRET` قديم مكشوف في تاريخ git على origin (commit رفع سابق) — دُوِّر محليًّا؛ يجب **تدوير سرّ الإنتاج** على المنصّة، ولتطهير التاريخ يلزم إعادة كتابته (BFG/`git filter-repo`) بموافقة صريحة.
 
 ---
