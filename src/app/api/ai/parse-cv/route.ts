@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseCV } from "@/lib/ai";
+import { parseCV, suggestCvImprovements } from "@/lib/ai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 import { PDFParse } from "pdf-parse";
+
+// CVs are stored OUTSIDE /public and served via the authenticated /api/cv/[userId] route.
+const CV_DIR = path.join(process.cwd(), "private_uploads", "cvs");
 
 // POST /api/ai/parse-cv
 // Extracts data from text or file and optionally updates the candidate's profile
@@ -12,14 +17,20 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    // للمرحلة التجريبية: سنسمح باستخدام الـ API حتى بدون تسجيل دخول لاختبار الواجهة
-    // if (!session || (session.user as any).role !== "CANDIDATE") {
-    //   return NextResponse.json({ success: false, error: "Unauthorized. Candidates only." }, { status: 403 });
-    // }
+    // Parsing calls a paid AI provider — require an authenticated candidate/admin
+    // so the endpoint cannot be used anonymously to drain the OpenAI quota.
+    if (!session) {
+      return NextResponse.json({ success: false, error: "يجب تسجيل الدخول لتحليل السيرة الذاتية" }, { status: 401 });
+    }
+    const sessionRole = (session.user as any).role;
+    if (sessionRole !== "CANDIDATE" && sessionRole !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "هذه الخدمة متاحة للباحثين عن عمل فقط" }, { status: 403 });
+    }
 
     const contentType = req.headers.get("content-type") || "";
     let cvText = "";
     let saveProfile = false;
+    let pdfBuffer: Buffer | null = null; // kept so we can persist the uploaded CV
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
@@ -36,10 +47,11 @@ export async function POST(req: NextRequest) {
           const parser = new PDFParse({ data: buffer });
           const result = await parser.getText();
           cvText = result.text;
+          pdfBuffer = buffer;
         } catch (pdfError: any) {
-          console.warn("PDF Parsing warning:", pdfError.message);
-          // في حال فشل استخراج النص بسبب توافقية Next.js، نضع نص افتراضي لنسمح للنظام بالمتابعة
-          cvText = "تم رفع ملف PDF، ولكن لم نتمكن من استخراج النص برمجياً. (مرحلة تجريبية)";
+          console.warn("PDF Parsing error:", pdfError.message);
+          // Do NOT substitute placeholder text and overwrite the profile — fail clearly.
+          return NextResponse.json({ success: false, error: "تعذّر استخراج النص من ملف PDF. جرّب لصق المحتوى يدوياً." }, { status: 422 });
         }
       } else {
         // Assume text file
@@ -58,38 +70,53 @@ export async function POST(req: NextRequest) {
     // Call the OpenAI parser
     const parsedData = await parseCV(cvText);
 
+    // Best-effort CV improvement suggestions (never fail the request on error).
+    let suggestions: string[] = [];
+    try {
+      suggestions = await suggestCvImprovements(cvText);
+    } catch (e) {
+      console.warn("CV suggestions failed:", (e as any)?.message);
+    }
+
     // Save to database if requested AND user is logged in
     const role = session ? (session.user as any).role : null;
     if (saveProfile && session && (role === "CANDIDATE" || role === "ADMIN")) {
       const candidateId = (session.user as any).id;
-      
+
+      // Persist the uploaded PDF to a private dir; expose via authenticated route.
+      let resumeUrl: string | undefined;
+      if (pdfBuffer) {
+        try {
+          await mkdir(CV_DIR, { recursive: true });
+          await writeFile(path.join(CV_DIR, `${candidateId}.pdf`), pdfBuffer);
+          resumeUrl = `/api/cv/${candidateId}`;
+        } catch (e) {
+          console.error("Failed to store CV file:", e);
+        }
+      }
+
+      const data = {
+        bio: parsedData.bio,
+        skills: JSON.stringify(parsedData.skills),
+        experienceYears: parsedData.experienceYears,
+        location: parsedData.location,
+        nationality: parsedData.nationality,
+        visaStatus: parsedData.visaStatus,
+        specialization: parsedData.specialization,
+        ...(resumeUrl ? { resumeUrl } : {}),
+      };
+
       await prisma.candidateProfile.upsert({
         where: { userId: candidateId },
-        update: {
-          bio: parsedData.bio,
-          skills: JSON.stringify(parsedData.skills),
-          experienceYears: parsedData.experienceYears,
-          location: parsedData.location,
-          nationality: parsedData.nationality,
-          visaStatus: parsedData.visaStatus,
-          specialization: parsedData.specialization,
-        },
-        create: {
-          userId: candidateId,
-          bio: parsedData.bio,
-          skills: JSON.stringify(parsedData.skills),
-          experienceYears: parsedData.experienceYears,
-          location: parsedData.location,
-          nationality: parsedData.nationality,
-          visaStatus: parsedData.visaStatus,
-          specialization: parsedData.specialization,
-        }
+        update: data,
+        create: { userId: candidateId, ...data },
       });
     }
 
-    return NextResponse.json({ success: true, data: parsedData }, { status: 200 });
+    return NextResponse.json({ success: true, data: parsedData, suggestions }, { status: 200 });
 
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("parse-cv failed:", error?.message);
+    return NextResponse.json({ success: false, error: "تعذّر تحليل السيرة الذاتية حالياً، حاول مرة أخرى لاحقاً" }, { status: 500 });
   }
 }

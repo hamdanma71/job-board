@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { hasActiveSubscription } from "@/lib/subscription";
+import { notifyFollowersOfNewJob, notifyMatchingAlerts } from "@/lib/notifications";
 
 // GET /api/jobs - Fetch jobs with optional filters
 export async function GET(req: NextRequest) {
@@ -19,17 +21,25 @@ export async function GET(req: NextRequest) {
       include: {
         company: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: [
+        { featured: "desc" },
+        { createdAt: "desc" },
+      ],
     };
 
+    // Note: SQLite's `contains` (LIKE) is already case-insensitive for ASCII,
+    // and Arabic is caseless, so we omit Prisma's `mode` (unsupported on SQLite).
+    // Search spans title + description + company name.
     if (search) {
-      query.where.title = { contains: search, mode: "insensitive" };
+      query.where.OR = [
+        { title: { contains: search } },
+        { description: { contains: search } },
+        { company: { is: { companyName: { contains: search } } } },
+      ];
     }
-    
+
     if (location) {
-      query.where.location = { contains: location, mode: "insensitive" };
+      query.where.location = { contains: location };
     }
 
     if (type) {
@@ -81,6 +91,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (company.isBanned) {
+      return NextResponse.json({ success: false, error: "تم حظر هذا الحساب من نشر الوظائف" }, { status: 403 });
+    }
+
+    // Subscription gate — same rule as /api/employer/jobs so this route can't be
+    // used to bypass payment and post jobs for free.
+    if (!hasActiveSubscription(company)) {
+      return NextResponse.json({ success: false, error: "يجب الترقية لباقة المحترفين (PRO) لنشر الوظائف" }, { status: 403 });
+    }
+
     const job = await prisma.job.create({
       data: {
         title,
@@ -91,6 +111,9 @@ export async function POST(req: NextRequest) {
         companyId: company.id,
       },
     });
+
+    await notifyFollowersOfNewJob(company.id, company.companyName, job.title);
+    await notifyMatchingAlerts({ title: job.title, description: job.description, location: job.location });
 
     return NextResponse.json({ success: true, data: job }, { status: 201 });
   } catch (error: any) {

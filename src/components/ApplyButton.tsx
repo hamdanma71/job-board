@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useT } from "@/components/I18nProvider";
 
 export default function ApplyButton({ jobId }: { jobId: string }) {
+  const t = useT();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<"IDLE" | "SUCCESS" | "ERROR">("IDLE");
@@ -24,11 +26,11 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "حدث خطأ أثناء التقديم");
+        throw new Error(data.error || t("apply.error"));
       }
 
       setStatus("SUCCESS");
-      setMessage("تم التقديم بنجاح!");
+      setMessage(t("apply.successMsg"));
       setTimeout(() => {
         router.push("/dashboard/candidate");
         router.refresh();
@@ -49,7 +51,7 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
         disabled={isLoading || status === "SUCCESS"}
         className="btn btn-primary"
       >
-        {isLoading ? "جاري التقديم..." : status === "SUCCESS" ? "تم التقديم ✅" : "تقدم الآن"}
+        {isLoading ? t("apply.applying") : status === "SUCCESS" ? t("apply.applied") : t("apply.applyNow")}
       </button>
       
       {message && (

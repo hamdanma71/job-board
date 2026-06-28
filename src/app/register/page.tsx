@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 
 export default function RegisterPage() {
+  const t = useT();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +30,7 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "حدث خطأ أثناء التسجيل");
+        throw new Error(data.error || t("registerPage.registerError"));
       }
 
       // Automatically redirect to login page after successful registration
@@ -44,8 +46,8 @@ export default function RegisterPage() {
     <main className="container flex-center" style={{ minHeight: "80vh", padding: "2rem" }}>
       <div className="card" style={{ maxWidth: "500px", width: "100%", padding: "2.5rem" }}>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--primary)" }}>حساب جديد</h1>
-          <p className="text-muted">انضم إلى منصة التوظيف الأذكى الآن</p>
+          <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--primary)" }}>{t("registerPage.title")}</h1>
+          <p className="text-muted">{t("registerPage.subtitle")}</p>
         </div>
 
         {error && (
@@ -56,14 +58,14 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div className="input-group">
-            <label className="input-label">الاسم الكامل / اسم الشركة</label>
+            <label className="input-label">{t("registerPage.nameLabel")}</label>
             <input 
               type="text" 
               className="input-field" 
               required 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
-              placeholder="مثال: أحمد محمد"
+              placeholder={t("registerPage.namePlaceholder")}
             />
           </div>
 

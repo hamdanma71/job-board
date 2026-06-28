@@ -6,13 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 // In SQLite, we use String instead of Enum
 // Roles: "CANDIDATE", "EMPLOYER", "ADMIN"
-// ApplicationStatus: "PENDING", "REVIEWED", "INTERVIEW", "ACCEPTED", "REJECTED"
+// ApplicationStatus (7-stage ATS): "PENDING", "REVIEWING", "QUALIFIED", "INTERVIEW", "OFFER", "HIRED", "REJECTED"
 // JobType: "FULL_TIME", "PART_TIME", "CONTRACT", "REMOTE", "INTERNSHIP"
 
 model User {
@@ -30,6 +30,175 @@ model User {
   applications     Application[]
   reviews          Review[]
   notifications    Notification[]
+  jobAlerts        JobAlert[]
+  follows          CompanyFollow[]
+  posts            Post[]
+  sentConnections     Connection[] @relation("requester")
+  receivedConnections Connection[] @relation("addressee")
+  testResults      SkillTestResult[]
+  resumes          Resume[]
+  savedCandidates  SavedCandidate[] @relation("savedBy")   // as employer
+  savedByEmployers SavedCandidate[] @relation("savedAs")   // as candidate
+  conversationsA   Conversation[]   @relation("convA")
+  conversationsB   Conversation[]   @relation("convB")
+  messages         Message[]
+  scorecards            Scorecard[]
+  candidateComments     CandidateComment[]
+  sentInvitations       Invitation[]  @relation("invFrom")
+  receivedInvitations   Invitation[]  @relation("invTo")
+  postReactions         PostReaction[]
+  postComments          PostComment[]
+  endorsementsGiven     Endorsement[] @relation("endFrom")
+  endorsementsReceived  Endorsement[] @relation("endTo")
+  interviewReviews      InterviewReview[]
+}
+
+// Direct messaging (1:1). userAId < userBId (sorted) to dedupe the pair.
+model Conversation {
+  id            String   @id @default(uuid())
+  userAId       String
+  userA         User     @relation("convA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId       String
+  userB         User     @relation("convB", fields: [userBId], references: [id], onDelete: Cascade)
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  messages      Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body           String
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// Multiple CVs per candidate (Bayt-style)
+model Resume {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  fileUrl   String?
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Employer shortlist of candidates (Naukri-style folders)
+model SavedCandidate {
+  id          String   @id @default(uuid())
+  employerId  String
+  employer    User     @relation("savedBy", fields: [employerId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   User     @relation("savedAs", fields: [candidateId], references: [id], onDelete: Cascade)
+  folder      String   @default("عام")
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@unique([employerId, candidateId])
+  @@index([employerId])
+}
+
+// Interview scheduling tied to an application
+model Interview {
+  id            String   @id @default(uuid())
+  applicationId String   @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  scheduledAt   DateTime
+  mode          String   @default("ONLINE") // ONLINE, ONSITE, PHONE
+  location      String?
+  note          String?
+  createdAt     DateTime @default(now())
+}
+
+// Professional network: connections (LinkedIn-style)
+model Connection {
+  id          String   @id @default(uuid())
+  requesterId String
+  requester   User     @relation("requester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addresseeId String
+  addressee   User     @relation("addressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  status      String   @default("PENDING") // PENDING, ACCEPTED
+  createdAt   DateTime @default(now())
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
+}
+
+// Professional feed posts
+model Post {
+  id        String   @id @default(uuid())
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  reactions PostReaction[]
+  comments  PostComment[]
+
+  @@index([createdAt])
+}
+
+// Skills assessment
+model SkillTest {
+  id        String   @id @default(uuid())
+  title     String
+  skill     String
+  questions String   // JSON: [{ q, options[], answer (index) }]
+  createdAt DateTime @default(now())
+
+  results   SkillTestResult[]
+}
+
+model SkillTestResult {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testId    String
+  test      SkillTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  score     Int      // 0..100
+  passed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Company follow (LinkedIn/Product-Hunt style) — followers get notified of new jobs
+model CompanyFollow {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId String
+  company   CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+}
+
+// Saved job alerts — candidate gets matching-job notifications
+model JobAlert {
+  id        String   @id @default(uuid())
+  keywords  String
+  location  String?
+  frequency String   @default("DAILY") // DAILY, WEEKLY
+  isActive  Boolean  @default(true)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([isActive])
 }
 
 model CandidateProfile {
@@ -45,8 +214,21 @@ model CandidateProfile {
   nationality     String?
   visaStatus      String?
   specialization  String?
+
+  // CV-search visibility + premium ranking (Bayt-style)
+  isSearchable     Boolean   @default(true)   // candidate opts into recruiter CV search
+  rankBoostedUntil DateTime?                   // Rank Booster active until this time
+  lastRefreshedAt  DateTime?                   // Auto/manual CV refresh -> freshness ordering
+
+  // Individual subscription plan (admin-manageable)
+  plan        String    @default("FREE")       // FREE, PREMIUM
+  planEndsAt  DateTime?
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([isSearchable, nationality])
+  @@index([specialization])
 }
 
 model CompanyProfile {
@@ -65,11 +247,22 @@ model CompanyProfile {
   isVerified         Boolean  @default(false)
   commercialRegisterUrl String?
   
+  isBanned    Boolean  @default(false)
+
+  // Startup profile (Wellfound-style)
+  isStartup      Boolean @default(false)
+  stage          String? // Seed, Series A, ...
+  fundingRaised  String?
+  teamSize       String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   jobs Job[]
   reviews Review[]
+  payments Payment[]
+  followers CompanyFollow[]
+  interviewReviews InterviewReview[]
 }
 
 model Job {
@@ -80,21 +273,32 @@ model Job {
   salary      String?
   type        String   @default("FULL_TIME")
   isActive    Boolean  @default(true)
+  featured    Boolean  @default(false) // sponsored/featured job (revenue stream)
   source      String   @default("INTERNAL") // INTERNAL, BAYT, INDEED, etc.
   externalUrl String?  // Link to the original job post if external
+
+  // Structured fields for advanced search facets
+  salaryMin      Int?
+  salaryMax      Int?
+  experienceMin  Int?  // minimum years of experience required
   
   companyId   String
   company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
   applications Application[]
+  invitations  Invitation[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([isActive, featured, createdAt])
 }
 
 model Application {
   id          String   @id @default(uuid())
   status      String   @default("PENDING")
+  promoted    Boolean  @default(false) // candidate "Application Promotion" -> sorts to top
   
   jobId       String
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -105,17 +309,32 @@ model Application {
   appliedAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  interview   Interview?
+  scorecards  Scorecard[]
+  comments    CandidateComment[]
+  offer       Offer?
+
   @@unique([jobId, candidateId]) // Prevent applying to the same job twice
+  @@index([candidateId])
 }
 
 // Company Reviews and Salaries System
 model Review {
   id          String   @id @default(uuid())
-  rating      Int      // 1 to 5
+  rating      Int      // overall, 1 to 5 (avg of the 7 criteria when provided)
   comment     String
   salary      String?  // Optional salary disclosure
   position    String?  // The role they had
   isAnonymous Boolean  @default(false)
+
+  // 7-criteria company rating (vision item 11), each 1..5, optional
+  ratingWorkEnv    Int?
+  ratingSalary     Int?
+  ratingBenefits   Int?
+  ratingGrowth     Int?
+  ratingManagement Int?
+  ratingCulture    Int?
+  ratingStability  Int?
   
   companyId   String
   company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -124,6 +343,8 @@ model Review {
   reviewer    User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
+
+  @@unique([companyId, reviewerId]) // one review per reviewer per company
 }
 
 // Notifications System
@@ -137,4 +358,142 @@ model Notification {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// Payments / revenue ledger (one row per completed Stripe payment)
+model Payment {
+  id           String   @id @default(uuid())
+  amount       Int      // smallest currency unit (e.g. halalas/cents)
+  currency     String   @default("sar")
+  status       String   @default("paid")
+  stripeEventId String? @unique // idempotency: ignore duplicate webhook deliveries
+  description  String?
+
+  companyId    String
+  company      CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+
+  @@index([companyId, createdAt])
+}
+
+// ===== ATS depth (Greenhouse/Lever) =====
+model Scorecard {
+  id            String   @id @default(uuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  reviewerId    String
+  reviewer      User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  rating        Int      // 1..5
+  recommendation String  // STRONG_YES, YES, NO, STRONG_NO
+  strengths     String?
+  weaknesses    String?
+  createdAt     DateTime @default(now())
+
+  @@index([applicationId])
+}
+
+model CandidateComment {
+  id            String   @id @default(uuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body          String
+  createdAt     DateTime @default(now())
+
+  @@index([applicationId])
+}
+
+model Offer {
+  id            String   @id @default(uuid())
+  applicationId String   @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  salary        String?
+  startDate     DateTime?
+  notes         String?
+  status        String   @default("SENT") // SENT, ACCEPTED, DECLINED
+  createdAt     DateTime @default(now())
+}
+
+// ===== Invite-to-apply / reverse marketplace (ZipRecruiter/Hired) =====
+model Invitation {
+  id          String   @id @default(uuid())
+  employerId  String
+  employer    User     @relation("invFrom", fields: [employerId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   User     @relation("invTo", fields: [candidateId], references: [id], onDelete: Cascade)
+  jobId       String?
+  job         Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  message     String?
+  status      String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt   DateTime @default(now())
+
+  @@index([candidateId])
+  @@index([employerId])
+}
+
+// ===== LinkedIn-depth: reactions, comments, endorsements =====
+model PostReaction {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+}
+
+model Endorsement {
+  id          String   @id @default(uuid())
+  endorserId  String
+  endorser    User     @relation("endFrom", fields: [endorserId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   User     @relation("endTo", fields: [candidateId], references: [id], onDelete: Cascade)
+  skill       String
+  createdAt   DateTime @default(now())
+
+  @@unique([endorserId, candidateId, skill])
+  @@index([candidateId])
+}
+
+// ===== Glassdoor-style interview reviews =====
+model InterviewReview {
+  id          String   @id @default(uuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  position    String?
+  difficulty  Int?     // 1..5
+  outcome     String?  // OFFER, REJECTED, NO_RESPONSE, PENDING
+  questions   String?
+  experience  String
+  isAnonymous Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([companyId])
+}
+
+// ===== Global app settings (key/value) — e.g. enabled UI locales =====
+model AppSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }

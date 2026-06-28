@@ -2,19 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { APPLICATION_STATUSES, STATUS_LABELS } from "@/lib/applicationStatus";
+import { useT } from "@/components/I18nProvider";
 
 export default function ApplicationStatusUpdater({ applicationId, currentStatus }: { applicationId: string, currentStatus: string }) {
+  const t = useT();
   const router = useRouter();
   const [status, setStatus] = useState(currentStatus);
   const [isLoading, setIsLoading] = useState(false);
 
-  const statuses = [
-    { value: "PENDING", label: "مرشح جديد (قيد المراجعة)" },
-    { value: "REVIEWED", label: "تمت المراجعة (مؤهل مبدئياً)" },
-    { value: "INTERVIEW", label: "تم تحديد مقابلة" },
-    { value: "ACCEPTED", label: "عرض وظيفي (مقبول)" },
-    { value: "REJECTED", label: "مرفوض" }
-  ];
+  const statuses = APPLICATION_STATUSES.map((value) => ({ value, label: t("appStatus." + value) }));
 
   const handleUpdate = async () => {
     setIsLoading(true);
@@ -25,13 +22,13 @@ export default function ApplicationStatusUpdater({ applicationId, currentStatus 
         body: JSON.stringify({ status })
       });
 
-      if (!res.ok) throw new Error("فشل التحديث");
-      
+      if (!res.ok) throw new Error("update failed");
+
       // Force refresh to update the UI
       router.refresh();
-      
+
     } catch (error) {
-      alert("حدث خطأ أثناء تحديث الحالة");
+      alert(t("statusUpd.error"));
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +52,7 @@ export default function ApplicationStatusUpdater({ applicationId, currentStatus 
         onClick={handleUpdate} 
         disabled={isLoading || status === currentStatus}
       >
-        {isLoading ? "جاري الحفظ..." : "حفظ الحالة"}
+        {isLoading ? t("statusUpd.saving") : t("statusUpd.save")}
       </button>
     </div>
   );

@@ -35,12 +35,12 @@ export async function POST(req: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: "sar",
+            currency: "aed",
             product_data: {
               name: "باقة المحترفين (PRO)",
               description: "نشر وظائف غير محدود وأدوات ذكاء اصطناعي",
             },
-            unit_amount: 19900, // 199.00 SAR
+            unit_amount: 19900, // 199.00 AED
           },
           quantity: 1,
         },

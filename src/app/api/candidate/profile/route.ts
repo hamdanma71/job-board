@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { serializeSkills } from "@/lib/skills";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -15,6 +16,7 @@ export async function PUT(req: NextRequest) {
     const userId = (session.user as any).id;
     const body = await req.json();
     const { name, bio, skills, location, experienceYears, expectedSalary, nationality, visaStatus, specialization } = body;
+    const normalizedSkills = skills !== undefined ? serializeSkills(skills) : undefined;
 
     // Update User name
     if (name) {
@@ -29,7 +31,7 @@ export async function PUT(req: NextRequest) {
       where: { userId },
       update: {
         bio,
-        skills,
+        skills: normalizedSkills,
         location,
         experienceYears: experienceYears ? parseInt(experienceYears, 10) : 0,
         expectedSalary,
@@ -40,7 +42,7 @@ export async function PUT(req: NextRequest) {
       create: {
         userId,
         bio,
-        skills,
+        skills: normalizedSkills,
         location,
         experienceYears: experienceYears ? parseInt(experienceYears, 10) : 0,
         expectedSalary,

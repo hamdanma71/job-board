@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useT } from "@/components/I18nProvider";
 
 export default function CVUploadButton() {
+  const t = useT();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"FILE" | "TEXT">("FILE");
   const [cvText, setCvText] = useState("");
@@ -14,10 +16,10 @@ export default function CVUploadButton() {
   const processResponse = async (res: Response) => {
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error || "فشل تحليل السيرة الذاتية");
+      throw new Error(data.error || t("cvBtn.parseFailed"));
     }
     setStatus("SUCCESS");
-    setMessage("تم استخراج المهارات والنبذة بنجاح!");
+    setMessage(t("cvBtn.successMsg"));
     setTimeout(() => {
       setIsOpen(false);
       window.location.reload();
@@ -30,7 +32,7 @@ export default function CVUploadButton() {
 
     setIsLoading(true);
     setStatus("IDLE");
-    setMessage("جاري قراءة السيرة الذاتية...");
+    setMessage(t("cvBtn.reading"));
 
     try {
       const formData = new FormData();
@@ -56,7 +58,7 @@ export default function CVUploadButton() {
 
     setIsLoading(true);
     setStatus("IDLE");
-    setMessage("جاري تحليل النص...");
+    setMessage(t("cvBtn.analyzingText"));
 
     try {
       const res = await fetch("/api/ai/parse-cv", {
@@ -80,7 +82,7 @@ export default function CVUploadButton() {
         style={{ width: "100%" }}
         onClick={() => setIsOpen(true)}
       >
-        تحديث السيرة الذاتية الذكي
+        {t("cvBtn.openBtn")}
       </button>
 
       {isOpen && (
@@ -92,24 +94,24 @@ export default function CVUploadButton() {
           <div className="card" style={{ width: "100%", maxWidth: "500px", position: "relative" }}>
             <button 
               onClick={() => setIsOpen(false)}
-              style={{ position: "absolute", top: "1rem", left: "1rem", background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer" }}
+              style={{ position: "absolute", top: "1rem", insetInlineEnd: "1rem", background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer" }}
             >
               &times;
             </button>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", marginBottom: "1rem" }}>استخراج السيرة الذاتية بالذكاء الاصطناعي</h2>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", marginBottom: "1rem" }}>{t("cvBtn.modalTitle")}</h2>
             
             <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-light)", paddingBottom: "0.5rem" }}>
               <button 
                 onClick={() => setActiveTab("FILE")}
                 style={{ background: "none", border: "none", fontWeight: activeTab === "FILE" ? "bold" : "normal", color: activeTab === "FILE" ? "var(--primary)" : "var(--foreground)", cursor: "pointer" }}
               >
-                رفع ملف PDF
+                {t("cvBtn.tabFile")}
               </button>
               <button 
                 onClick={() => setActiveTab("TEXT")}
                 style={{ background: "none", border: "none", fontWeight: activeTab === "TEXT" ? "bold" : "normal", color: activeTab === "TEXT" ? "var(--primary)" : "var(--foreground)", cursor: "pointer" }}
               >
-                لصق النص يدوياً
+                {t("cvBtn.tabText")}
               </button>
             </div>
 
@@ -127,9 +129,9 @@ export default function CVUploadButton() {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isLoading}
                 >
-                  {isLoading ? "جاري التحليل..." : "اختر ملف السيرة الذاتية"}
+                  {isLoading ? t("cvBtn.analyzing") : t("cvBtn.chooseFile")}
                 </button>
-                <p className="text-muted" style={{ fontSize: "0.85rem", marginTop: "1rem" }}>صيغ الملفات المدعومة: PDF, TXT</p>
+                <p className="text-muted" style={{ fontSize: "0.85rem", marginTop: "1rem" }}>{t("cvBtn.supportedFormats")}</p>
               </div>
             )}
 
@@ -138,7 +140,7 @@ export default function CVUploadButton() {
                 <textarea 
                   className="input-field" 
                   rows={6} 
-                  placeholder="قم بنسخ ولصق محتوى سيرتك الذاتية هنا..."
+                  placeholder={t("cvBtn.textPlaceholder")}
                   value={cvText}
                   onChange={e => setCvText(e.target.value)}
                   disabled={isLoading}
@@ -148,7 +150,7 @@ export default function CVUploadButton() {
                   onClick={handleTextSubmit}
                   disabled={isLoading || !cvText.trim()}
                 >
-                  {isLoading ? "جاري التحليل..." : "استخراج وتحديث"}
+                  {isLoading ? t("cvBtn.analyzing") : t("cvBtn.extractUpdate")}
                 </button>
               </div>
             )}

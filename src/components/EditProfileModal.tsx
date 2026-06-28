@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import CountrySelect from "@/components/CountrySelect";
+import { NATIONALITIES } from "@/lib/worldCountries";
+import { useT } from "@/components/I18nProvider";
 
 export default function EditProfileModal({ 
   initialName, 
@@ -21,7 +24,9 @@ export default function EditProfileModal({
   initialVisaStatus: string,
   initialSpecialization: string
 }) {
+  const t = useT();
   const [isOpen, setIsOpen] = useState(false);
+  const [ok, setOk] = useState(false);
   const [name, setName] = useState(initialName || "");
   const [bio, setBio] = useState(initialBio || "");
   let defaultSkills = initialSkills || "";
@@ -72,14 +77,16 @@ export default function EditProfileModal({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      setMessage("تم تحديث البيانات بنجاح!");
+      setOk(true);
+      setMessage(t("editProfile.success"));
       setTimeout(() => {
         setIsOpen(false);
         window.location.reload();
       }, 1000);
-      
+
     } catch (error: any) {
-      setMessage(error.message || "حدث خطأ");
+      setOk(false);
+      setMessage(error.message || t("editProfile.error"));
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +95,7 @@ export default function EditProfileModal({
   return (
     <>
       <button className="btn btn-outline" style={{ marginTop: "1rem", width: "100%" }} onClick={() => setIsOpen(true)}>
-        تعديل البيانات الشخصية
+        {t("editProfile.openBtn")}
       </button>
 
       {isOpen && (
@@ -101,61 +108,62 @@ export default function EditProfileModal({
           <div className="card" style={{ width: "100%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
             <button 
               onClick={() => setIsOpen(false)}
-              style={{ position: "absolute", top: "1rem", left: "1rem", background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer" }}
+              style={{ position: "absolute", top: "1rem", insetInlineEnd: "1rem", background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer" }}
             >
               &times;
             </button>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "1.5rem" }}>تعديل البيانات</h2>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "1.5rem" }}>{t("editProfile.title")}</h2>
             
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
-                  <label className="input-label">الاسم</label>
+                  <label className="input-label">{t("editProfile.name")}</label>
                   <input type="text" className="input-field" value={name} onChange={e => setName(e.target.value)} required />
                 </div>
                 <div>
-                  <label className="input-label">التخصص الدقيق</label>
-                  <input type="text" className="input-field" value={specialization} onChange={e => setSpecialization(e.target.value)} placeholder="مثال: هندسة برمجيات" />
+                  <label className="input-label">{t("editProfile.specialization")}</label>
+                  <input type="text" className="input-field" value={specialization} onChange={e => setSpecialization(e.target.value)} placeholder={t("editProfile.specPlaceholder")} />
                 </div>
               </div>
               
               <div className="input-group">
-                <label className="input-label">النبذة التعريفية</label>
+                <label className="input-label">{t("editProfile.bio")}</label>
                 <textarea className="input-field" value={bio} onChange={e => setBio(e.target.value)} rows={3} />
               </div>
 
               <div className="input-group">
-                <label className="input-label">المهارات (افصل بينها بفاصلة)</label>
+                <label className="input-label">{t("editProfile.skills")}</label>
                 <input type="text" className="input-field" value={skills} onChange={e => setSkills(e.target.value)} />
               </div>
 
               <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <CountrySelect label={location ? `${t("editProfile.countryCurrent")} ${location})` : t("editProfile.country")} onSelect={(c) => setLocation(c?.name || "")} />
                 <div>
-                  <label className="input-label">المدينة / الدولة</label>
-                  <input type="text" className="input-field" value={location} onChange={e => setLocation(e.target.value)} />
-                </div>
-                <div>
-                  <label className="input-label">سنوات الخبرة</label>
+                  <label className="input-label">{t("editProfile.expYears")}</label>
                   <input type="number" className="input-field" value={experienceYears} onChange={e => setExperienceYears(Number(e.target.value))} />
                 </div>
               </div>
 
               <div className="input-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
-                  <label className="input-label">الجنسية</label>
-                  <input type="text" className="input-field" value={nationality} onChange={e => setNationality(e.target.value)} />
+                  <label className="input-label">{t("editProfile.nationality")}</label>
+                  <select className="input-field" value={nationality} onChange={e => setNationality(e.target.value)}>
+                    <option value="">{t("editProfile.chooseNationality")}</option>
+                    {nationality && !NATIONALITIES.includes(nationality) && <option value={nationality}>{nationality}</option>}
+                    {NATIONALITIES.map((n) => <option key={n} value={n}>{n}</option>)}
+                  </select>
                 </div>
                 <div>
-                  <label className="input-label">حالة التأشيرة / الإقامة</label>
-                  <input type="text" className="input-field" value={visaStatus} onChange={e => setVisaStatus(e.target.value)} placeholder="مثال: إقامة قابلة للتحويل" />
+                  <label className="input-label">{t("editProfile.visaStatus")}</label>
+                  <input type="text" className="input-field" value={visaStatus} onChange={e => setVisaStatus(e.target.value)} placeholder={t("editProfile.visaPlaceholder")} />
                 </div>
               </div>
 
               <button type="submit" className="btn btn-primary" disabled={isLoading} style={{ marginTop: "1rem" }}>
-                {isLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
+                {isLoading ? t("editProfile.saving") : t("editProfile.save")}
               </button>
-              
-              {message && <p style={{ textAlign: "center", fontSize: "0.9rem", color: message.includes("نجاح") ? "var(--secondary)" : "#ef4444" }}>{message}</p>}
+
+              {message && <p style={{ textAlign: "center", fontSize: "0.9rem", color: ok ? "var(--secondary)" : "#ef4444" }}>{message}</p>}
             </form>
           </div>
         </div>

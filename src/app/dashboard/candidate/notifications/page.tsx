@@ -3,8 +3,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getLocale, getDictionary } from "@/lib/i18n";
 
 export default async function CandidateNotificationsPage() {
+  const dict = getDictionary(await getLocale());
+  const t = (k: string) => dict[k] ?? k;
   const session = await getServerSession(authOptions);
 
   if (!session || (session.user as any).role !== "CANDIDATE") {
@@ -22,11 +25,11 @@ export default async function CandidateNotificationsPage() {
     <main className="container animate-fade-in" style={{ padding: "3rem 1.5rem" }}>
       <header className="mb-8 flex-between">
         <div>
-          <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>مركز الإشعارات 🔔</h1>
-          <p className="text-muted" style={{ marginTop: "0.5rem" }}>تتبع جميع تحديثات طلباتك والتنبيهات الخاصة بك</p>
+          <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>{t("notifs.title")}</h1>
+          <p className="text-muted" style={{ marginTop: "0.5rem" }}>{t("notifs.subtitle")}</p>
         </div>
         <Link href="/dashboard/candidate" className="btn btn-outline" style={{ borderRadius: "var(--radius-full)" }}>
-          العودة للوحة التحكم
+          {t("notifs.backToDash")}
         </Link>
       </header>
 
@@ -34,8 +37,8 @@ export default async function CandidateNotificationsPage() {
         {notifications.length === 0 ? (
           <div style={{ padding: "4rem", textAlign: "center" }}>
             <div style={{ fontSize: "3rem", marginBottom: "1rem", opacity: 0.5 }}>📭</div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: "bold" }}>لا توجد إشعارات بعد</h3>
-            <p className="text-muted">سنقوم بتنبيهك فور وجود أي تحديثات على طلبات التوظيف الخاصة بك.</p>
+            <h3 style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{t("notifs.emptyTitle")}</h3>
+            <p className="text-muted">{t("notifs.emptyDesc")}</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column" }}>

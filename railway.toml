@@ -1,5 +1,8 @@
 [build]
 builder = "NIXPACKS"
+# Explicit so the prebuild gate (npm run prebuild => i18n audit + consistency)
+# runs before next build and blocks incomplete/inconsistent translations.
+buildCommand = "npm run build"
 
 [deploy]
 preDeployCommand = "npx prisma migrate deploy"

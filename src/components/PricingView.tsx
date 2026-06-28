@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useT } from "@/components/I18nProvider";
 
 export default function PricingView({ isEmployer }: { isEmployer: boolean }) {
+  const t = useT();
   const [isYearly, setIsYearly] = useState(false);
 
   return (
     <>
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", marginBottom: "3rem" }}>
-        <span style={{ fontWeight: !isYearly ? "bold" : "normal", color: !isYearly ? "var(--text)" : "var(--text-light)" }}>شهرياً</span>
+        <span style={{ fontWeight: !isYearly ? "bold" : "normal", color: !isYearly ? "var(--text)" : "var(--text-light)" }}>{t("pricingView.monthly")}</span>
         
         <label style={{ position: "relative", display: "inline-block", width: "60px", height: "34px" }}>
           <input 
@@ -32,7 +34,7 @@ export default function PricingView({ isEmployer }: { isEmployer: boolean }) {
         </label>
         
         <span style={{ fontWeight: isYearly ? "bold" : "normal", color: isYearly ? "var(--text)" : "var(--text-light)" }}>
-          سنوياً <span style={{ fontSize: "0.75rem", backgroundColor: "var(--secondary)20", color: "var(--secondary)", padding: "0.2rem 0.5rem", borderRadius: "var(--radius-full)", marginRight: "0.5rem" }}>خصم 20%</span>
+          {t("pricingView.yearly")} <span style={{ fontSize: "0.75rem", backgroundColor: "var(--secondary)20", color: "var(--secondary)", padding: "0.2rem 0.5rem", borderRadius: "var(--radius-full)", marginInlineStart: "0.5rem" }}>{t("pricingView.discount20")}</span>
         </span>
       </div>
 
@@ -40,42 +42,42 @@ export default function PricingView({ isEmployer }: { isEmployer: boolean }) {
         
         {/* Free Tier */}
         <div className="card hover-scale" style={{ border: "1px solid var(--border-light)" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>الباقة الأساسية</h2>
-          <div style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--primary)", marginBottom: "1.5rem" }}>مجاناً</div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>{t("pricingView.freeName")}</h2>
+          <div style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--primary)", marginBottom: "1.5rem" }}>{t("pricingView.free")}</div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem 0", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-            <li>✔️ نشر وظيفة واحدة نشطة</li>
-            <li>✔️ الوصول للوحة المتقدمين (ATS)</li>
-            <li>✔️ الترتيب الذكي للمتقدمين</li>
-            <li className="text-muted" style={{ textDecoration: "line-through" }}>تصدير بيانات المرشحين</li>
-            <li className="text-muted" style={{ textDecoration: "line-through" }}>توليد الوصف الوظيفي بالذكاء الاصطناعي</li>
+            <li>✔️ {t("pricingView.freeFeat1")}</li>
+            <li>✔️ {t("pricingView.freeFeat2")}</li>
+            <li>✔️ {t("pricingView.freeFeat3")}</li>
+            <li className="text-muted" style={{ textDecoration: "line-through" }}>{t("pricingView.freeFeat4")}</li>
+            <li className="text-muted" style={{ textDecoration: "line-through" }}>{t("pricingView.freeFeat5")}</li>
           </ul>
-          
+
           {isEmployer ? (
-            <button className="btn btn-outline" style={{ width: "100%", cursor: "default" }}>باقتك الحالية</button>
+            <button className="btn btn-outline" style={{ width: "100%", cursor: "default" }}>{t("pricingView.currentPlan")}</button>
           ) : (
-            <Link href="/register" className="btn btn-outline" style={{ display: "block", textAlign: "center", width: "100%" }}>سجل كشركة الآن</Link>
+            <Link href="/register" className="btn btn-outline" style={{ display: "block", textAlign: "center", width: "100%" }}>{t("pricingView.registerCompany")}</Link>
           )}
         </div>
 
         {/* Pro Tier */}
         <div className="card hover-scale" style={{ border: "2px solid var(--primary)", position: "relative" }}>
-          <div style={{ position: "absolute", top: "-15px", right: "20px", backgroundColor: "var(--primary)", color: "white", padding: "0.2rem 1rem", borderRadius: "var(--radius-full)", fontSize: "0.8rem", fontWeight: "bold" }}>
-            الأكثر شعبية
+          <div style={{ position: "absolute", top: "-15px", insetInlineStart: "20px", backgroundColor: "var(--primary)", color: "white", padding: "0.2rem 1rem", borderRadius: "var(--radius-full)", fontSize: "0.8rem", fontWeight: "bold" }}>
+            {t("pricingView.mostPopular")}
           </div>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>باقة المحترفين (PRO)</h2>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>{t("pricingView.proName")}</h2>
           <div style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--primary)", marginBottom: "0.5rem" }}>
-            {isYearly ? "159" : "199"} <span style={{ fontSize: "1rem", color: "var(--text-light)" }}>ريال / شهرياً</span>
+            {isYearly ? "159" : "199"} <span style={{ fontSize: "1rem", color: "var(--text-light)" }}>{t("pricingView.perMonthAed")}</span>
           </div>
           <div style={{ color: "var(--secondary)", fontWeight: "bold", fontSize: "0.9rem", marginBottom: "1rem" }}>
-            {isYearly ? "يُدفع سنوياً (1,908 ريال)" : "(مجاناً للمشتركين الأوائل خلال فترة الإطلاق)"}
+            {isYearly ? t("pricingView.billedYearly") : t("pricingView.freeForEarly")}
           </div>
-          
+
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem 0", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-            <li>✔️ نشر وظائف <strong>غير محدودة</strong></li>
-            <li>✔️ توليد الوصف الوظيفي بالذكاء الاصطناعي</li>
-            <li>✔️ الوصول المتقدم لبيانات الرواتب</li>
-            <li>✔️ فلاتر بحث متقدمة للمرشحين</li>
-            <li>✔️ دعم فني أولوية</li>
+            <li>✔️ {t("pricingView.proFeat1Pre")} <strong>{t("pricingView.proFeat1Strong")}</strong></li>
+            <li>✔️ {t("pricingView.proFeat2")}</li>
+            <li>✔️ {t("pricingView.proFeat3")}</li>
+            <li>✔️ {t("pricingView.proFeat4")}</li>
+            <li>✔️ {t("pricingView.proFeat5")}</li>
           </ul>
 
           {isEmployer ? (
@@ -89,17 +91,17 @@ export default function PricingView({ isEmployer }: { isEmployer: boolean }) {
                   if (data.url) {
                     window.location.href = data.url;
                   } else {
-                    alert(data.error || 'حدث خطأ أثناء الاتصال ببوابة الدفع');
+                    alert(data.error || t("pricingView.checkoutError"));
                   }
                 } catch(e) {
-                  alert('حدث خطأ أثناء الاتصال ببوابة الدفع');
+                  alert(t("pricingView.checkoutError"));
                 }
               }}
             >
-              الترقية الآن
+              {t("pricingView.upgradeNow")}
             </button>
           ) : (
-            <Link href="/register" className="btn btn-primary" style={{ display: "block", textAlign: "center", width: "100%" }}>ابدأ الآن</Link>
+            <Link href="/register" className="btn btn-primary" style={{ display: "block", textAlign: "center", width: "100%" }}>{t("pricingView.startNow")}</Link>
           )}
         </div>
 

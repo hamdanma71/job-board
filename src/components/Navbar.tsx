@@ -2,9 +2,16 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import NotificationBell from "./NotificationBell";
+import LogoutButton from "./LogoutButton";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { getLocale, getDictionary } from "@/lib/i18n";
+import { getEnabledLocales } from "@/lib/settings";
 
 export default async function Navbar() {
   const session = await getServerSession(authOptions);
+  const dict = getDictionary(await getLocale());
+  const t = (k: string) => dict[k] ?? k;
+  const enabledLocales = await getEnabledLocales();
 
   return (
     <header style={{ 
@@ -42,58 +49,59 @@ export default async function Navbar() {
 
         {/* Links */}
         <nav style={{ display: "flex", gap: "1.5rem", fontSize: "0.95rem", fontWeight: 600 }}>
-          <Link href="/" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--primary)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-main)"}>الرئيسية</Link>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--primary)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-main)"}>
-            <Link href="/jobs">تصفح الوظائف</Link>
-          </div>
-          <Link href="/salaries" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--primary)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-main)"}>الرواتب والشركات</Link>
-          <Link href="/podcasts" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--primary)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-main)"}>البودكاست 🎧</Link>
+          <Link href="/" className="nav-link">{t("nav.home")}</Link>
+          <Link href="/jobs" className="nav-link">{t("nav.jobs")}</Link>
+          <Link href="/salaries" className="nav-link">{t("nav.salaries")}</Link>
+          <Link href="/network" className="nav-link">{t("nav.network")}</Link>
+          <Link href="/skills" className="nav-link">{t("nav.skills")}</Link>
+          <Link href="/resources" className="nav-link">{t("nav.resources")} 🎧</Link>
         </nav>
       </div>
 
       {/* Left Side (Auth, Icons, Employer Link in RTL) */}
       <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
         
-        {/* Notification Bell (If Logged In) */}
+        {/* Language switcher */}
+        <LanguageSwitcher enabled={enabledLocales} />
+
+        {/* Messages + Notification Bell (If Logged In) */}
+        {session && <Link href="/messages" className="nav-link" title={t("nav.messages")} style={{ fontSize: "1.4rem" }}>✉️</Link>}
         {session && <NotificationBell />}
 
         {/* Auth Buttons */}
         {!session ? (
           <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
-            <Link href="/login" style={{
+            <Link href="/login" className="nav-link" style={{
               padding: "0.5rem 1.2rem",
-              color: "var(--text-main)",
               fontWeight: "600",
-              fontSize: "0.9rem",
-              textDecoration: "none",
-              transition: "color 0.2s"
-            }} onMouseOver={(e) => e.currentTarget.style.color = "var(--primary)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-main)"}>
-              دخول
+              fontSize: "0.9rem"
+            }}>
+              {t("nav.login")}
             </Link>
             <Link href="/register" className="btn btn-primary" style={{ padding: "0.5rem 1.5rem", fontSize: "0.9rem" }}>
-              سجل الآن
+              {t("nav.register")}
             </Link>
           </div>
         ) : (
-          <Link href={(session.user as any).role === "EMPLOYER" ? "/dashboard/employer" : (session.user as any).role === "CANDIDATE" ? "/dashboard/candidate" : "/admin"} className="btn btn-primary" style={{ padding: "0.5rem 1.5rem", fontSize: "0.9rem" }}>
-            لوحة التحكم
-          </Link>
+          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+            <Link href={(session.user as any).role === "EMPLOYER" ? "/dashboard/employer" : (session.user as any).role === "CANDIDATE" ? "/dashboard/candidate" : "/admin"} className="btn btn-primary" style={{ padding: "0.5rem 1.5rem", fontSize: "0.9rem" }}>
+              {t("nav.dashboard")}
+            </Link>
+            <LogoutButton />
+          </div>
         )}
 
         {/* For Employers Link */}
-        <Link href="/employers" style={{
+        <Link href="/employers" className="nav-link-muted" style={{
           display: "flex",
           alignItems: "center",
           gap: "0.5rem",
-          paddingLeft: "1rem",
-          borderRight: "1px solid var(--border-dark)",
-          color: "var(--text-muted)",
-          textDecoration: "none",
+          paddingInlineEnd: "1rem",
+          borderInlineStart: "1px solid var(--border-dark)",
           fontWeight: "600",
-          fontSize: "0.95rem",
-          transition: "color 0.2s"
-        }} onMouseOver={(e) => e.currentTarget.style.color = "var(--primary)"} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-muted)"}>
-          أصحاب العمل <span style={{ fontSize: "1.2rem", lineHeight: 0 }}>›</span>
+          fontSize: "0.95rem"
+        }}>
+          {t("nav.employers")} <span style={{ fontSize: "1.2rem", lineHeight: 0 }}>›</span>
         </Link>
         
       </div>

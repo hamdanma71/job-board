@@ -7,9 +7,17 @@
   },
   "scripts": {
     "dev": "next dev",
+    "predev": "node scripts/i18n/gen-registry.js",
+    "prebuild": "node scripts/i18n/gen-registry.js && node scripts/i18n/audit.js && node scripts/i18n/glossary_check.js",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "i18n:gen": "node scripts/i18n/gen-registry.js",
+    "i18n:sync": "node scripts/i18n/sync-keys.js",
+    "i18n:audit": "node scripts/i18n/audit.js",
+    "i18n:consistency": "node scripts/i18n/glossary_check.js",
+    "i18n:normalize": "node scripts/i18n/glossary_apply.js",
+    "i18n:check": "node scripts/i18n/gen-registry.js && node scripts/i18n/audit.js && node scripts/i18n/glossary_check.js"
   },
   "dependencies": {
     "@libsql/client": "^0.17.4",

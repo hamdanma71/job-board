@@ -1,30 +1,41 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getLocale, getDictionary } from "@/lib/i18n";
+
+export const metadata = {
+  title: "دليل الشركات | JobMatch",
+  description: "تصفّح الشركات، اقرأ تقييمات الموظفين بـ7 معايير، وقارن قبل التقديم.",
+};
 
 export default async function CompaniesDirectory() {
+  const dict = getDictionary(await getLocale());
+  const t = (k: string) => dict[k] ?? k;
+  // Fetch company scalars only (bounded); compute stats via SQL aggregates — no row hydration.
   const companies = await prisma.companyProfile.findMany({
-    include: {
-      jobs: {
-        where: { isActive: true }
-      },
-      reviews: true
-    },
-    orderBy: {
-      createdAt: "desc"
-    }
+    orderBy: { createdAt: "desc" },
+    take: 24,
+    select: { id: true, companyName: true, industry: true, description: true },
   });
+  const ids = companies.map((c) => c.id);
 
-  // Calculate rating for each company
-  const companiesWithStats = companies.map(c => {
-    let avgRating = 0;
-    if (c.reviews.length > 0) {
-      avgRating = c.reviews.reduce((acc, r) => acc + r.rating, 0) / c.reviews.length;
-    }
+  const [reviewAgg, jobAgg] = await Promise.all([
+    ids.length
+      ? prisma.review.groupBy({ by: ["companyId"], where: { companyId: { in: ids } }, _avg: { rating: true }, _count: { _all: true } })
+      : Promise.resolve([] as any[]),
+    ids.length
+      ? prisma.job.groupBy({ by: ["companyId"], where: { companyId: { in: ids }, isActive: true }, _count: { _all: true } })
+      : Promise.resolve([] as any[]),
+  ]);
+  const reviewMap = new Map(reviewAgg.map((r: any) => [r.companyId, { avg: r._avg.rating ?? 0, count: r._count._all }]));
+  const jobMap = new Map(jobAgg.map((j: any) => [j.companyId, j._count._all]));
+
+  const companiesWithStats = companies.map((c) => {
+    const rv = reviewMap.get(c.id);
     return {
       ...c,
-      avgRating: avgRating.toFixed(1),
-      reviewCount: c.reviews.length,
-      activeJobs: c.jobs.length
+      avgRating: (rv?.avg ?? 0).toFixed(1),
+      reviewCount: rv?.count ?? 0,
+      activeJobs: jobMap.get(c.id) ?? 0,
     };
   });
 
@@ -46,18 +57,18 @@ export default async function CompaniesDirectory() {
             marginBottom: "1.5rem",
             color: "var(--text-main)"
           }}>
-            اكتشف أفضل بيئات العمل
+            {t("companiesList.heroTitle")}
           </h1>
           <p style={{ fontSize: "1.2rem", color: "var(--text-muted)", marginBottom: "2.5rem", lineHeight: "1.6" }}>
-            تصفح آلاف الشركات، اقرأ تقييمات الموظفين الحقيقية، وقارن الرواتب والمزايا قبل اتخاذ قرار الانضمام.
+            {t("companiesList.heroSubtitle")}
           </p>
           <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", maxWidth: "600px", margin: "0 auto" }}>
             <input 
               type="text" 
-              placeholder="ابحث عن شركة (مثال: أرامكو، جوجل)" 
+              placeholder={t("companiesList.searchPlaceholder")}
               style={{ flex: 1, padding: "1rem 1.5rem", borderRadius: "var(--radius-full)", border: "1px solid var(--border-light)", fontSize: "1.1rem", outline: "none" }}
             />
-            <button className="btn btn-primary" style={{ padding: "1rem 2rem", borderRadius: "var(--radius-full)", fontWeight: "bold" }}>بحث</button>
+            <button className="btn btn-primary" style={{ padding: "1rem 2rem", borderRadius: "var(--radius-full)", fontWeight: "bold" }}>{t("companiesList.searchBtn")}</button>
           </div>
         </div>
       </section>
@@ -66,17 +77,17 @@ export default async function CompaniesDirectory() {
       <section className="container" style={{ padding: "4rem 1.5rem" }}>
         
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>الشركات المتميزة هذا الشهر</h2>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{t("companiesList.featuredHeading")}</h2>
           <select style={{ padding: "0.5rem 1rem", borderRadius: "4px", border: "1px solid var(--border-light)", backgroundColor: "var(--surface)" }}>
-            <option>ترتيب حسب التقييم</option>
-            <option>الأكثر وظائف</option>
-            <option>الأحدث</option>
+            <option>{t("companiesList.sortByRating")}</option>
+            <option>{t("companiesList.sortByMostJobs")}</option>
+            <option>{t("companiesList.sortByNewest")}</option>
           </select>
         </div>
 
         {companiesWithStats.length === 0 ? (
           <div className="card text-center" style={{ padding: "4rem" }}>
-            <p className="text-muted">لا توجد شركات مسجلة حالياً.</p>
+            <p className="text-muted">{t("companiesList.emptyState")}</p>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "2rem" }}>
@@ -96,16 +107,16 @@ export default async function CompaniesDirectory() {
                     <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {company.companyName}
                       {Number(company.avgRating) >= 4.5 && (
-                        <span title="شركة موثقة ومتميزة" style={{ color: "#10b981", fontSize: "1rem" }}>✔️</span>
+                        <span title={t("companiesList.verifiedBadgeTitle")} style={{ color: "#10b981", fontSize: "1rem" }}>✔️</span>
                       )}
                     </h2>
                     <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-                      <span className="badge badge-outline" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>{company.industry || "قطاع عام"}</span>
-                      {Number(company.avgRating) >= 4.5 && <span className="badge" style={{ backgroundColor: "rgba(251, 191, 36, 0.1)", color: "#d97706", fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>أفضل بيئة عمل 🏆</span>}
+                      <span className="badge badge-outline" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>{company.industry || t("companiesList.defaultIndustry")}</span>
+                      {Number(company.avgRating) >= 4.5 && <span className="badge" style={{ backgroundColor: "rgba(251, 191, 36, 0.1)", color: "#d97706", fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>{t("companiesList.bestWorkplaceBadge")}</span>}
                     </div>
                     
                     <p className="text-muted" style={{ fontSize: "0.95rem", marginBottom: "1.5rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.5" }}>
-                      {company.description || "لا يوجد وصف متوفر لهذه الشركة. يتم تحديث الملف الشخصي لاحقاً."}
+                      {company.description || t("companiesList.noDescription")}
                     </p>
                   </div>
 
@@ -115,7 +126,7 @@ export default async function CompaniesDirectory() {
                       <span className="text-muted" style={{ fontSize: "0.85rem" }}>({company.reviewCount})</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--primary)", fontWeight: "bold", fontSize: "0.9rem" }}>
-                      <span>{company.activeJobs} وظيفة</span>
+                      <span>{company.activeJobs} {t("companiesList.jobsLabel")}</span>
                       <span style={{ fontSize: "1.2rem", lineHeight: 0 }}>›</span>
                     </div>
                   </div>

@@ -4,8 +4,10 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 
 function LoginForm() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -28,7 +30,7 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        setError("بيانات الدخول غير صحيحة. يرجى التأكد من البريد الإلكتروني وكلمة المرور.");
+        setError(t("loginPage.invalidCredentials"));
         setIsLoading(false);
       } else {
         // Successful login, fetch session to determine role and redirect
@@ -43,7 +45,7 @@ function LoginForm() {
         router.refresh();
       }
     } catch (err: any) {
-      setError("حدث خطأ أثناء الاتصال بالخادم.");
+      setError(t("loginPage.serverError"));
       setIsLoading(false);
     }
   };
@@ -51,13 +53,13 @@ function LoginForm() {
   return (
     <div className="card" style={{ maxWidth: "500px", width: "100%", padding: "2.5rem" }}>
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--primary)" }}>تسجيل الدخول</h1>
-        <p className="text-muted">مرحباً بعودتك إلى منصة التوظيف</p>
+        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--primary)" }}>{t("loginPage.title")}</h1>
+        <p className="text-muted">{t("loginPage.subtitle")}</p>
       </div>
 
       {isRegistered && (
         <div style={{ backgroundColor: "rgba(16, 185, 129, 0.1)", color: "var(--secondary)", padding: "1rem", borderRadius: "var(--radius-sm)", marginBottom: "1.5rem", fontSize: "0.9rem", textAlign: "center" }}>
-          ✅ تم إنشاء حسابك بنجاح! يرجى تسجيل الدخول.
+          {t("loginPage.registeredSuccess")}
         </div>
       )}
 
@@ -69,7 +71,7 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <div className="input-group">
-          <label className="input-label">البريد الإلكتروني</label>
+          <label className="input-label">{t("loginPage.emailLabel")}</label>
           <input 
             type="email" 
             className="input-field" 
@@ -82,7 +84,7 @@ function LoginForm() {
         </div>
 
         <div className="input-group">
-          <label className="input-label">كلمة المرور</label>
+          <label className="input-label">{t("loginPage.passwordLabel")}</label>
           <input 
             type="password" 
             className="input-field" 
@@ -95,22 +97,23 @@ function LoginForm() {
         </div>
 
         <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "0.5rem" }} disabled={isLoading}>
-          {isLoading ? "جاري التحقق..." : "دخول"}
+          {isLoading ? t("loginPage.loggingIn") : t("loginPage.loginBtn")}
         </button>
       </form>
 
       <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.95rem" }}>
-        <span className="text-muted">ليس لديك حساب؟ </span>
-        <Link href="/register" style={{ color: "var(--primary)", fontWeight: "bold" }}>أنشئ حساباً جديداً</Link>
+        <span className="text-muted">{t("loginPage.noAccount")} </span>
+        <Link href="/register" style={{ color: "var(--primary)", fontWeight: "bold" }}>{t("loginPage.createAccount")}</Link>
       </div>
     </div>
   );
 }
 
 export default function LoginPage() {
+  const t = useT();
   return (
     <main className="container flex-center" style={{ minHeight: "80vh", padding: "2rem" }}>
-      <Suspense fallback={<div>جاري التحميل...</div>}>
+      <Suspense fallback={<div>{t("loginPage.loading")}</div>}>
         <LoginForm />
       </Suspense>
     </main>

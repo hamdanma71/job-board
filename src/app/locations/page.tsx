@@ -1,14 +1,17 @@
 import Link from "next/link";
 import countriesData from "@/data/countries.json";
+import { getLocale, getDictionary } from "@/lib/i18n";
 
-export default function LocationsHub() {
+export default async function LocationsHub() {
+  const dict = getDictionary(await getLocale());
+  const t = (k: string) => dict[k] ?? k;
   return (
     <main className="container" style={{ padding: "4rem 1.5rem" }}>
       
       <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-        <h1 style={{ fontSize: "3rem", fontWeight: "bold", marginBottom: "1rem" }}>استكشف الوظائف حول العالم</h1>
+        <h1 style={{ fontSize: "3rem", fontWeight: "bold", marginBottom: "1rem" }}>{t("locationsList.title")}</h1>
         <p className="text-muted" style={{ fontSize: "1.2rem", maxWidth: "600px", margin: "0 auto" }}>
-          اختر وجهتك المهنية القادمة من بين جميع دول العالم المعترف بها.
+          {t("locationsList.subtitle")}
         </p>
       </div>
 
@@ -22,7 +25,7 @@ export default function LocationsHub() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                 <span style={{ color: "var(--primary)", fontWeight: "bold" }}>{country.jobCount}+</span>
-                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>وظيفة</span>
+                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{t("locationsList.jobLabel")}</span>
               </div>
             </div>
           </Link>

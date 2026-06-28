@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { isValidStatus, statusLabel } from "@/lib/applicationStatus";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,6 +16,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const userId = (session.user as any).id;
     const body = await req.json();
     const { status } = body;
+
+    // Reject arbitrary/invalid statuses (SQLite has no enum to enforce this).
+    if (!isValidStatus(status)) {
+      return NextResponse.json({ success: false, error: "حالة غير صالحة" }, { status: 400 });
+    }
 
     const company = await prisma.companyProfile.findUnique({ where: { userId } });
     if (!company) {
@@ -45,20 +51,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       data: { status }
     });
 
-    // Create a notification for the candidate
-    const statusLabels: Record<string, string> = {
-      "PENDING": "قيد المراجعة",
-      "REVIEWED": "تمت مراجعته",
-      "INTERVIEW": "تم ترشيحك لمقابلة",
-      "ACCEPTED": "مقبول (عرض وظيفي)",
-      "REJECTED": "مرفوض"
-    };
-    
+    // Create a notification for the candidate (shared label map = no drift).
     await prisma.notification.create({
       data: {
         userId: application.candidateId,
         title: "تحديث على طلب التوظيف",
-        message: `تم تحديث حالة طلبك لوظيفة "${job.title}" في شركة "${company.companyName}" إلى: ${statusLabels[status] || status}`
+        message: `تم تحديث حالة طلبك لوظيفة "${job.title}" في شركة "${company.companyName}" إلى: ${statusLabel(status)}`
       }
     });
 
